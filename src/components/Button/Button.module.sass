@@ -1,0 +1,26 @@
+@import '../../sass/variables'
+
+.base
+    background-color: transparent
+    margin: 0
+    padding: 6px 18px 10px
+    font-size: 18px
+    line-height: 28px
+    color: $text-color-black
+    cursor: pointer
+    border: none
+    border-radius: 5px
+    margin-right: 20px
+    &:last-child
+        margin-right: 0
+    &:active
+        background-color: #ccc
+
+.outlined
+    border: 1px solid $text-color-black
+
+.green
+    border-color: $green
+    color: $green
+    &:active
+        background-color: $green-gray
