@@ -9,11 +9,14 @@ import Header from './components/Header';
 import ArticleList from './components/ArticleList';
 import ArticleItemWithService from './components/ArticleItemWithService';
 import ErrorMessage from './components/ErrorMessage';
+import RegistrationForm from './components/RegistrationForm';
+import SingIn from './components/SingInForm';
 
 import reduceArticles from './services/reduceArticles';
 import reduceFetching from './services/reduceFetching';
 import reducePagination from './services/reducePagination';
 import reduceErrors from './services/reduceErrors';
+import reduceLogging from './services/reduceLogging';
 import actionsCreators from './services/actionsCreators';
 
 const composeEnhancers =
@@ -34,6 +37,7 @@ const store = createStore(
     isFetching: reduceFetching,
     page: reducePagination,
     errors: reduceErrors,
+    user: reduceLogging,
   }),
   enhancer
 );
@@ -45,6 +49,7 @@ function App() {
         <Header />
         <Main>
           <Switch>
+            <Route path="/sing-in" component={SingIn} />
             <Route
               exact
               path="/articles/page/:id"
@@ -61,7 +66,9 @@ function App() {
                 return <ArticleItemWithService id={id} />;
               }}
             />
-            <Redirect exact from="/" to="/articles/page/1" />
+            <Route path="/sing-up" component={RegistrationForm} />
+            <Redirect exact from="/" to="/sing-in" />
+
             <Route render={() => <ErrorMessage description="404: there is no page on this URL :(" />} />
           </Switch>
         </Main>

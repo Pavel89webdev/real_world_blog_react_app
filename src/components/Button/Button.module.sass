@@ -15,12 +15,36 @@
         margin-right: 0
     &:active
         background-color: #ccc
+    &:disabled
+        background-color: $text-color-sing-in
+        cursor: auto
 
 .outlined
     border: 1px solid $text-color-black
+
+.wide
+    width: 100%
+
+.margin-bottom
+    margin-bottom: 8px
+
+.margin-right
+    margin-right: 27px
 
 .green
     border-color: $green
     color: $green
     &:active
         background-color: $green-gray
+
+.blue
+    border-color: $blue
+    background-color: $blue
+    color: $text-color-white
+    &:active
+        background-color: $blue-gray
+
+.small
+    padding: 6px 10px
+    font-size: 14px
+    line-height: 22px

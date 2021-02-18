@@ -29,6 +29,28 @@ class RealWorldService {
     const article = await this.getResourse(url);
     return article;
   }
+
+  async registerNewUser(userObj = { username: '', email: '', password: '' }, url = null) {
+    if (!url) url = `${this.apiBase}/users`;
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ user: { ...userObj } }),
+    };
+    const newUser = await this.getResourse(url, options);
+    return newUser;
+  }
+
+  async singIn(userObj = { email: '', password: '' }) {
+    const url = `${this.apiBase}/users/login`;
+    const user = await this.registerNewUser(userObj, url);
+    console.log(user);
+
+    return user;
+  }
 }
 
 export default new RealWorldService();

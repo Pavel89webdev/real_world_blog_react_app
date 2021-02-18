@@ -4,6 +4,7 @@ import realWorldService from '../RealWorldService';
 const actionsCreators = {
   isFetchingOn: () => ({ type: actions.isFetchingOn }),
   isFetchingOff: () => ({ type: actions.isFetchingOff }),
+  setLogginError: (message) => ({ type: actions.error, message }),
   async getArticles(dispatch, offset) {
     dispatch(actionsCreators.isFetchingOn());
 
@@ -43,6 +44,39 @@ const actionsCreators = {
     }
   },
   changePage: (newPage) => ({ type: actions.changePage, newPage }),
+  async singUp(dispatch, userObj) {
+    dispatch(actionsCreators.isFetchingOn());
+
+    try {
+      const result = await realWorldService.registerNewUser(userObj);
+      const action = {
+        type: actions.signUp,
+        user: { ...result },
+      };
+      dispatch(action);
+      return dispatch(actionsCreators.isFetchingOff());
+    } catch (e) {
+      dispatch(actionsCreators.isFetchingOff());
+      return dispatch(actionsCreators.setLogginError(e.message));
+    }
+  },
+
+  async singIn(dispatch, userObj) {
+    dispatch(actionsCreators.isFetchingOn());
+
+    try {
+      const result = await realWorldService.singIn(userObj);
+      const action = {
+        type: actions.singIn,
+        user: { ...result },
+      };
+      dispatch(action);
+      return dispatch(actionsCreators.isFetchingOff());
+    } catch (e) {
+      dispatch(actionsCreators.isFetchingOff());
+      return dispatch(actionsCreators.setLogginError(e.message));
+    }
+  },
 };
 
 export default actionsCreators;

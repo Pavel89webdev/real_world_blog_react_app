@@ -5,6 +5,8 @@ const actions = {
   getOneArticle: 'GET_ONE_ARTICLE',
   changePage: 'CHANGE_PAGE',
   error: 'ERROR',
+  signUp: 'SING_UP',
+  singIn: 'SING_IN',
 };
 
 export default actions;
