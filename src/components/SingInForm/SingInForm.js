@@ -78,7 +78,7 @@ function SingInForm({ singIn, isLoggin, history, isFetching, emailOrPasswordInva
       </Button>
       {emailOrPasswordInvalid && <FormErrorMessage serverError="email or password is invalid" />}
       <div className={classes['sing-up']}>
-        Don’t have an account? <Link to="/sign-up">Sign Up.</Link>
+        Don’t have an account? <Link to="/sing-up">Sign Up.</Link>
       </div>
     </form>
   );
@@ -87,7 +87,7 @@ function SingInForm({ singIn, isLoggin, history, isFetching, emailOrPasswordInva
 SingInForm.propTypes = {
   singIn: PropTypes.func.isRequired,
   isLoggin: PropTypes.bool.isRequired,
-  history: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
   isFetching: PropTypes.bool.isRequired,
   emailOrPasswordInvalid: PropTypes.bool,
 };

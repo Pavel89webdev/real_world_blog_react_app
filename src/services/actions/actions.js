@@ -7,6 +7,8 @@ const actions = {
   error: 'ERROR',
   signUp: 'SING_UP',
   singIn: 'SING_IN',
+  updateUser: 'UPDATE_USER',
+  logOut: 'LOG_OUT',
 };
 
 export default actions;

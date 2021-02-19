@@ -11,6 +11,7 @@ import ArticleItemWithService from './components/ArticleItemWithService';
 import ErrorMessage from './components/ErrorMessage';
 import RegistrationForm from './components/RegistrationForm';
 import SingIn from './components/SingInForm';
+import Profile from './components/Profile';
 
 import reduceArticles from './services/reduceArticles';
 import reduceFetching from './services/reduceFetching';
@@ -18,6 +19,7 @@ import reducePagination from './services/reducePagination';
 import reduceErrors from './services/reduceErrors';
 import reduceLogging from './services/reduceLogging';
 import actionsCreators from './services/actionsCreators';
+import getUserFromLocalStorage from './services/getUserFromLocalStorage';
 
 const composeEnhancers =
   typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
@@ -42,6 +44,12 @@ const store = createStore(
   enhancer
 );
 
+const singInUser = getUserFromLocalStorage();
+
+if (singInUser) {
+  store.dispatch(() => actionsCreators.singIn(store.dispatch, singInUser));
+}
+
 function App() {
   return (
     <Router>
@@ -49,6 +57,7 @@ function App() {
         <Header />
         <Main>
           <Switch>
+            <Route path="/profile" component={Profile} />
             <Route path="/sing-in" component={SingIn} />
             <Route
               exact
@@ -67,7 +76,7 @@ function App() {
               }}
             />
             <Route path="/sing-up" component={RegistrationForm} />
-            <Redirect exact from="/" to="/sing-in" />
+            <Redirect exact from="/" to="/profile" />
 
             <Route render={() => <ErrorMessage description="404: there is no page on this URL :(" />} />
           </Switch>

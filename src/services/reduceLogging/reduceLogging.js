@@ -12,6 +12,17 @@ function reduceLogging(state = { user: {}, isLoggin: false }, action) {
         ...action.user,
         isLoggin: !action.user.errors,
       };
+    case actions.updateUser:
+      return {
+        ...state,
+        ...action.user,
+        errors: action.errors,
+      };
+    case actions.logOut:
+      return {
+        user: {},
+        isLoggin: false,
+      };
     default:
       return state;
   }

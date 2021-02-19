@@ -77,6 +77,29 @@ const actionsCreators = {
       return dispatch(actionsCreators.setLogginError(e.message));
     }
   },
+
+  async updateUser(dispatch, userObj, token) {
+    dispatch(actionsCreators.isFetchingOn());
+
+    try {
+      const result = await realWorldService.updateUser(userObj, token);
+      const action = {
+        type: actions.updateUser,
+        errors: '',
+      };
+
+      if (result.errors) action.errors = result.errors;
+      if (!result.errors) action.user = { ...result };
+
+      dispatch(action);
+      return dispatch(actionsCreators.isFetchingOff());
+    } catch (e) {
+      dispatch(actionsCreators.isFetchingOff());
+      return dispatch(actionsCreators.setLogginError(e.message));
+    }
+  },
+
+  logOut: () => ({ type: actions.logOut }),
 };
 
 export default actionsCreators;
