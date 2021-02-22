@@ -1,31 +1,24 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import { useForm } from 'react-hook-form';
-import classNames from 'classnames';
 import actionsCreators from '../../services/actionsCreators';
 
 import classes from './SingInForm.module.sass';
 import Button from '../Button';
 import FormErrorMessage from '../FormErrorMessage';
 
-function SingInForm({ singIn, isLoggin, history, isFetching, emailOrPasswordInvalid }) {
-  const [email, setEmail] = useState('');
-  const [validateEmail, setValidateEmail] = useState(true);
-  const [password, setPassword] = useState('');
-  const [validatePassword, setValidatePassword] = useState(true);
+import { EmailInput, PasswordInput } from '../formInputs/formInputs';
 
+function SingInForm({ singIn, isLoggin, history, isFetching, emailOrPasswordInvalid }) {
+  // eslint-disable-next-line prefer-const
   const { register, handleSubmit } = useForm();
 
   if (isLoggin) history.push('/articles/page/1');
 
-  // добавить условие ели пользователь залогине - линковать его на главную (артикли)
-  // проверять и в локалсторадже
-
   const onSubmit = (data) => {
-    // if (!checkConfirmPassword || inValidUserName) return; тут проверка клиентской валидации
     const newUserObj = {
       email: data.email,
       password: data.password,
@@ -37,42 +30,9 @@ function SingInForm({ singIn, isLoggin, history, isFetching, emailOrPasswordInva
     <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
       <div className={classes.title}>Sing In</div>
       <div className={classes['input-title']}>Email address</div>
-      <input
-        name="email"
-        type="email"
-        minLength="3"
-        maxLength="20"
-        required
-        className={classNames(classes.input, validateEmail ? null : classes['input-invalid'])}
-        placeholder="Email"
-        ref={register}
-        onInput={(e) => {
-          const { value } = e.target;
-          setEmail(value);
-          setValidateEmail(value.legth > 3 || value.includes('@', 0));
-        }}
-        value={email}
-      />
-      {!validateEmail && <FormErrorMessage serverError='email should contain "@"' />}
+      <EmailInput ref={register} required />
       <div className={classes['input-title']}>Password</div>
-      <input
-        name="password"
-        type="password"
-        minLength="8"
-        maxLength="40"
-        required
-        className={classNames(classes.input, validatePassword ? null : classes['input-invalid'])}
-        placeholder="Password"
-        ref={register}
-        onInput={(e) => {
-          const { value } = e.target;
-          setPassword(value);
-          setValidatePassword(value.length > 7);
-        }}
-        value={password}
-      />
-      {!validatePassword && <FormErrorMessage serverError="password should be longer that 7 letters" />}
-
+      <PasswordInput ref={register} required />
       <Button submit style={['wide', 'blue', 'margin-bottom']} disabled={isFetching} loading={isFetching}>
         Login
       </Button>

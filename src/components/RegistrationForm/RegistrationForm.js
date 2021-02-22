@@ -4,9 +4,8 @@ import { connect } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router';
-import classNames from 'classnames';
 import Button from '../Button';
-import FormErrorMessage from '../FormErrorMessage';
+import { EmailInput, PasswordInput, UsernameInput, Checkbox, ConfirmPasswordInput } from '../formInputs/formInputs';
 
 import actionsCreators from '../../services/actionsCreators';
 
@@ -15,12 +14,8 @@ import classes from './RegistrationForm.module.sass';
 //  переделать все так чтобы ошбки приходили как пропсы из стора!
 
 function RegistrationForm({ singUp, userNameError, emailError, passwordError, isFetching, isLoggin, history }) {
-  const [userName, setUserName] = useState('');
-  const [inValidUserName, setInvalidUserName] = useState(false);
-  const [email, setEmail] = useState('');
-  const [currentPassword, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [checkConfirmPassword, setCheckConfirmPassword] = useState(true);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState(false);
 
   const { register, handleSubmit } = useForm();
 
@@ -29,9 +24,9 @@ function RegistrationForm({ singUp, userNameError, emailError, passwordError, is
   }
 
   const onSubmit = (data) => {
-    if (!checkConfirmPassword || inValidUserName) return;
+    if (!confirmPassword) return;
     const newUserObj = {
-      username: data.userName,
+      username: data.username,
       email: data.email,
       password: data.password,
     };
@@ -42,78 +37,23 @@ function RegistrationForm({ singUp, userNameError, emailError, passwordError, is
     <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
       <div className={classes.title}>Create new account</div>
       <div className={classes['input-title']}>Username</div>
-      <input
-        name="userName"
-        type="text"
-        minLength="3"
-        maxLength="20"
-        required
-        onInput={(e) => {
-          const { value } = e.target;
-          setUserName(value);
-          setInvalidUserName(value.length < 3 || value.length > 20);
-        }}
-        value={userName}
-        className={classNames(classes.input, inValidUserName ? classes['input-invalid'] : null)}
-        placeholder="Username"
-        ref={register}
-      />
-      {inValidUserName && <FormErrorMessage serverError="username must be from 3 to 20 letters" />}
-      {!inValidUserName && <FormErrorMessage serverError={userNameError} />}
+      <UsernameInput ref={register} required errorMessage={userNameError} />
 
       <div className={classes['input-title']}>Email address</div>
-      <input
-        name="email"
-        type="email"
-        required
-        className={classes.input}
-        placeholder="Email adress"
-        onInput={(e) => {
-          setEmail(e.target.value);
-        }}
-        value={email}
-        ref={register}
-      />
-      <FormErrorMessage serverError={emailError} />
-
+      <EmailInput ref={register} required errorMessage={emailError} />
       <div className={classes['input-title']}>Password</div>
-      <input
-        name="password"
-        type="password"
-        minLength="8"
-        maxLength="40"
-        required
-        onInput={(e) => {
-          setPassword(e.target.value);
-        }}
-        value={currentPassword}
-        className={classes.input}
-        placeholder="Password"
+      <PasswordInput
         ref={register}
-      />
-      <FormErrorMessage serverError={passwordError} />
-
-      <div className={classes['input-title']}>Repeat Password</div>
-      <input
-        name="confirm-password"
-        type="password"
         required
-        onInput={(e) => {
-          setConfirmPassword(e.target.value);
-          setCheckConfirmPassword(e.target.value === currentPassword);
-        }}
-        value={confirmPassword}
-        className={classes.input}
-        placeholder="Repeat Password"
+        errorMessage={passwordError}
+        setPassword={setPassword}
+        password={password}
       />
-      {!checkConfirmPassword && <FormErrorMessage serverError="passwords are different" />}
+      <div className={classes['input-title']}>Confirm password</div>
+      <ConfirmPasswordInput required password={password} setConfirmPassword={setConfirmPassword} />
 
       <hr />
-      <label className={classes['checkbox-label']}>
-        <input name="personal-data-agreement" className={classes.checkbox} type="checkbox" ref={register} required />
-        <div className={classes['custom-checkbox']} />
-        <p>I agree to the processing of my personal information</p>
-      </label>
+      <Checkbox description="I agree to the processing of my personal information" required />
 
       <Button submit style={['wide', 'blue', 'margin-bottom']} disabled={isFetching} loading={isFetching}>
         Create

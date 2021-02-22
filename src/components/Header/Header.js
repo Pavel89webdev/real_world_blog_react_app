@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import actionsCreators from '../../services/actionsCreators';
 import deleteUserfromLocaleStorage from '../../services/deleteUserfromLocaleStorage';
@@ -10,7 +11,7 @@ import avatar from '../../img/avatar.png';
 
 import classes from './Header.module.sass';
 
-function Header({ isLoggin, userName, imgUrl, logOut }) {
+function Header({ isLoggin, userName, imgUrl, logOut, history }) {
   const img = imgUrl || avatar;
 
   function loggingOut() {
@@ -26,7 +27,17 @@ function Header({ isLoggin, userName, imgUrl, logOut }) {
           <>
             <Button style={['outlined', 'green', 'small', 'margin-right']}>Create article</Button>
             <div className={classes.username}>{userName}</div>
-            <div className={classes.avatar}>
+            <div
+              className={classes.avatar}
+              onClick={() => {
+                history.push('/profile');
+              }}
+              onKeyDown={(e) => {
+                if (e.code === 'Enter') history.push('/profile');
+              }}
+              role="button"
+              tabIndex="0"
+            >
               <img src={img} alt="avatar" />
             </div>
             <Button style={['outlined']} onClick={loggingOut}>
@@ -55,6 +66,7 @@ Header.propTypes = {
   userName: PropTypes.string,
   imgUrl: PropTypes.string,
   logOut: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
 };
 
 Header.defaultProps = {
@@ -79,4 +91,4 @@ const mapDispatchToProps = (dispatch) => ({
   logOut: () => dispatch(actionsCreators.logOut()),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Header);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Header));
