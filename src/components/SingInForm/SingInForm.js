@@ -10,7 +10,7 @@ import classes from './SingInForm.module.sass';
 import Button from '../Button';
 import FormErrorMessage from '../FormErrorMessage';
 
-import { EmailInput, PasswordInput } from '../formInputs/formInputs';
+import { EmailInput, PasswordInput } from '../formInputs';
 
 function SingInForm({ singIn, isLoggin, history, isFetching, emailOrPasswordInvalid }) {
   // eslint-disable-next-line prefer-const

@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import Button from '../Button';
-import { EmailInput, PasswordInput, UsernameInput, Checkbox, ConfirmPasswordInput } from '../formInputs/formInputs';
+import { EmailInput, PasswordInput, UsernameInput, Checkbox, ConfirmPasswordInput } from '../formInputs';
 
 import actionsCreators from '../../services/actionsCreators';
 

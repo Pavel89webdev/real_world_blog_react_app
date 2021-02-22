@@ -1,3 +1,3 @@
-import * as formInputs from './formInputs';
+import { EmailInput, PasswordInput, UsernameInput, Checkbox, ConfirmPasswordInput } from './formInputs';
 
-export default formInputs;
+export { EmailInput, PasswordInput, UsernameInput, Checkbox, ConfirmPasswordInput };

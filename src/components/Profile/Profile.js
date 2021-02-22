@@ -6,7 +6,7 @@ import { withRouter } from 'react-router';
 import actionsCreators from '../../services/actionsCreators';
 
 import Button from '../Button';
-import { EmailInput, UsernameInput, PasswordInput } from '../formInputs/formInputs';
+import { EmailInput, UsernameInput, PasswordInput } from '../formInputs';
 
 import classes from './Profile.module.sass';
 
