@@ -12,6 +12,7 @@ import ErrorMessage from './components/ErrorMessage';
 import RegistrationForm from './components/RegistrationForm';
 import SingIn from './components/SingInForm';
 import Profile from './components/Profile';
+import NewArticle from './components/NewArticle';
 
 import reduceArticles from './services/reduceArticles';
 import reduceFetching from './services/reduceFetching';
@@ -57,6 +58,7 @@ function App() {
         <Header />
         <Main>
           <Switch>
+            <Route /* path="/new-article" */ component={NewArticle} />
             <Route path="/profile" component={Profile} />
             <Route path="/sing-in" component={SingIn} />
             <Route

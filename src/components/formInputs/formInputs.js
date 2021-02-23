@@ -6,6 +6,46 @@ import FormErrorMessage from '../FormErrorMessage';
 
 import classes from './formInputs.module.sass';
 
+const TextInput = React.forwardRef(({ placeholder, required, errorMessage, name }, ref) => {
+  const [currentValue, setValue] = useState('');
+  const [isValidate, setValidate] = useState(true);
+
+  return (
+    <>
+      <input
+        name={name}
+        type="text"
+        minLength="1"
+        required={required}
+        className={classNames(classes.input, isValidate ? null : classes['input-invalid'])}
+        placeholder={placeholder}
+        ref={ref}
+        onInput={(e) => {
+          const { value } = e.target;
+          setValue(value);
+          setValidate(value.length > 0);
+        }}
+        value={currentValue}
+      />
+      {!errorMessage && !isValidate && <FormErrorMessage serverError="enter title" />}
+      {errorMessage && <FormErrorMessage serverError={errorMessage} />}
+    </>
+  );
+});
+
+TextInput.propTypes = {
+  placeholder: PropTypes.string,
+  required: PropTypes.bool,
+  errorMessage: PropTypes.string,
+  name: PropTypes.string.isRequired,
+};
+
+TextInput.defaultProps = {
+  placeholder: 'text',
+  required: false,
+  errorMessage: '',
+};
+
 const EmailInput = React.forwardRef(({ placeholder, required, errorMessage }, ref) => {
   const [currentValue, setValue] = useState('');
   const [isValidate, setValidate] = useState(true);
@@ -187,4 +227,4 @@ Checkbox.defaultProps = {
   required: false,
 };
 
-export { EmailInput, PasswordInput, UsernameInput, Checkbox, ConfirmPasswordInput };
+export { EmailInput, PasswordInput, UsernameInput, Checkbox, ConfirmPasswordInput, TextInput };
