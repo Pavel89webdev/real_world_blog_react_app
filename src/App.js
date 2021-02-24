@@ -58,7 +58,7 @@ function App() {
         <Header />
         <Main>
           <Switch>
-            <Route /* path="/new-article" */ component={NewArticle} />
+            <Route path="/new-article" component={NewArticle} />
             <Route path="/profile" component={Profile} />
             <Route path="/sing-in" component={SingIn} />
             <Route
@@ -78,7 +78,7 @@ function App() {
               }}
             />
             <Route path="/sing-up" component={RegistrationForm} />
-            <Redirect exact from="/" to="/profile" />
+            <Redirect exact from="/" to="/new-article" />
 
             <Route render={() => <ErrorMessage description="404: there is no page on this URL :(" />} />
           </Switch>

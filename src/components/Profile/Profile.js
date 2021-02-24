@@ -15,7 +15,6 @@ function Profile({
   email,
   isLoggin,
   history,
-  token,
   setNewUserData,
   isFetching,
   usernameError,
@@ -34,7 +33,7 @@ function Profile({
     for (const key in data) {
       if (data[key].length === 0) delete data[key];
     }
-    setNewUserData(data, token);
+    setNewUserData(data);
   };
 
   return (
@@ -62,7 +61,6 @@ Profile.propTypes = {
   email: PropTypes.string,
   isLoggin: PropTypes.bool.isRequired,
   history: PropTypes.object.isRequired,
-  token: PropTypes.string,
   isFetching: PropTypes.bool.isRequired,
   setNewUserData: PropTypes.func.isRequired,
   usernameError: PropTypes.string,
@@ -74,7 +72,6 @@ Profile.propTypes = {
 Profile.defaultProps = {
   username: 'no username',
   email: 'no email',
-  token: '',
   usernameError: '',
   emailError: '',
   passwordError: '',
@@ -102,14 +99,13 @@ const mapStateToProps = (state) => {
     props.username = userInState.username;
     props.email = userInState.email;
     props.isLoggin = isLoggin;
-    props.token = userInState.token;
   }
 
   return props;
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  setNewUserData: (userObj, token) => actionsCreators.updateUser(dispatch, userObj, token),
+  setNewUserData: (userObj) => actionsCreators.updateUser(dispatch, userObj),
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Profile));

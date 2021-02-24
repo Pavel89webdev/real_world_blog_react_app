@@ -3,6 +3,8 @@ import setUserToLocalStorage from '../setUserToLocalStorage';
 class RealWorldService {
   apiBase = 'https://conduit.productionready.io/api';
 
+  token = '';
+
   async getResourse(url, options = null) {
     let result = null;
     try {
@@ -51,24 +53,39 @@ class RealWorldService {
     const user = await this.registerNewUser(userObj, url);
     if (!user.errors) {
       setUserToLocalStorage(userObj);
+      this.token = user.user.token;
     }
     return user;
   }
 
-  async updateUser(userObj = {}, token = '') {
+  async updateUser(userObj = {}) {
     const url = `${this.apiBase}/user`;
     const body = JSON.stringify({ user: { ...userObj } });
-    console.log(body);
     const options = {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: ` Token ${token}`,
+        Authorization: ` Token ${this.token}`,
       },
       body,
     };
     const newUser = await this.getResourse(url, options);
     return newUser;
+  }
+
+  async createArticle(articleObj = {}) {
+    const url = `${this.apiBase}/articles`;
+    const body = JSON.stringify({ article: { ...articleObj } });
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: ` Token ${this.token}`,
+      },
+      body,
+    };
+    const newArticle = await this.getResourse(url, options);
+    return newArticle;
   }
 }
 

@@ -1,13 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import FormErrorMessage from '../FormErrorMessage';
+import Button from '../Button';
 
 import classes from './formInputs.module.sass';
 
-const TextInput = React.forwardRef(({ placeholder, required, errorMessage, name }, ref) => {
+// my custom hook to text inputs:
+
+const useLocalStorage = (name) => {
   const [currentValue, setValue] = useState('');
+
+  useEffect(() => {
+    if (currentValue !== '') {
+      window.localStorage.setItem(name, currentValue);
+    }
+    if (currentValue === '') {
+      const valueFromLocalStorage = window.localStorage.getItem(name);
+      if (valueFromLocalStorage !== null && valueFromLocalStorage.length > 1) setValue(valueFromLocalStorage);
+    }
+  }, [setValue, currentValue, name]);
+
+  return [currentValue, setValue];
+};
+
+const TextInput = React.forwardRef(({ placeholder, required, errorMessage, name }, ref) => {
+  const [currentValue, setValue] = useLocalStorage(name);
   const [isValidate, setValidate] = useState(true);
 
   return (
@@ -27,7 +46,7 @@ const TextInput = React.forwardRef(({ placeholder, required, errorMessage, name 
         }}
         value={currentValue}
       />
-      {!errorMessage && !isValidate && <FormErrorMessage serverError="enter title" />}
+      {!errorMessage && !isValidate && <FormErrorMessage serverError="write some" />}
       {errorMessage && <FormErrorMessage serverError={errorMessage} />}
     </>
   );
@@ -44,6 +63,92 @@ TextInput.defaultProps = {
   placeholder: 'text',
   required: false,
   errorMessage: '',
+};
+
+const TextArea = React.forwardRef(({ placeholder, required, errorMessage, name }, ref) => {
+  const [currentValue, setValue] = useLocalStorage(name);
+  const [isValidate, setValidate] = useState(true);
+
+  return (
+    <>
+      <textarea
+        name={name}
+        type="text"
+        minLength="1"
+        rows="8"
+        required={required}
+        className={classNames(classes.input, isValidate ? null : classes['input-invalid'])}
+        placeholder={placeholder}
+        ref={ref}
+        onInput={(e) => {
+          const { value } = e.target;
+          setValue(value);
+          setValidate(value.length > 0);
+        }}
+        value={currentValue}
+      />
+      {!errorMessage && !isValidate && <FormErrorMessage serverError="write some" />}
+      {errorMessage && <FormErrorMessage serverError={errorMessage} />}
+    </>
+  );
+});
+
+TextArea.propTypes = {
+  placeholder: PropTypes.string,
+  required: PropTypes.bool,
+  errorMessage: PropTypes.string,
+  name: PropTypes.string.isRequired,
+};
+
+TextArea.defaultProps = {
+  placeholder: 'text',
+  required: false,
+  errorMessage: '',
+};
+
+const TagInput = React.forwardRef(({ name, widthAddButton, onDelete, onAdd }, ref) => {
+  const [currentValue, setValue] = useState('');
+
+  return (
+    <div className={classes['tag-wrapper']}>
+      <input
+        name={name}
+        type="text"
+        className={classNames(classes.input, classes['input-tag'])}
+        placeholder="Tag"
+        ref={ref}
+        onInput={(e) => {
+          const { value } = e.target;
+          setValue(value);
+        }}
+        value={currentValue}
+      />
+      <Button
+        style={['margin-right-small', 'red', 'outlined', 'wide-padding']}
+        onClick={() => {
+          onDelete(name);
+        }}
+      >
+        Delete
+      </Button>
+      {widthAddButton && (
+        <Button style={['blue', 'outlined', 'text-blue', 'wide-padding']} onClick={onAdd}>
+          Add tag
+        </Button>
+      )}
+    </div>
+  );
+});
+
+TagInput.propTypes = {
+  widthAddButton: PropTypes.bool,
+  name: PropTypes.string.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onAdd: PropTypes.func.isRequired,
+};
+
+TagInput.defaultProps = {
+  widthAddButton: false,
 };
 
 const EmailInput = React.forwardRef(({ placeholder, required, errorMessage }, ref) => {
@@ -227,4 +332,4 @@ Checkbox.defaultProps = {
   required: false,
 };
 
-export { EmailInput, PasswordInput, UsernameInput, Checkbox, ConfirmPasswordInput, TextInput };
+export { EmailInput, PasswordInput, UsernameInput, Checkbox, ConfirmPasswordInput, TextInput, TextArea, TagInput };

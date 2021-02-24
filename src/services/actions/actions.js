@@ -9,6 +9,7 @@ const actions = {
   singIn: 'SING_IN',
   updateUser: 'UPDATE_USER',
   logOut: 'LOG_OUT',
+  createNewArticle: 'CREATE_NEW_ARTICLE',
 };
 
 export default actions;

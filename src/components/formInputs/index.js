@@ -1,3 +1,12 @@
-import { EmailInput, PasswordInput, UsernameInput, Checkbox, ConfirmPasswordInput, TextInput } from './formInputs';
+import {
+  EmailInput,
+  PasswordInput,
+  UsernameInput,
+  Checkbox,
+  ConfirmPasswordInput,
+  TextInput,
+  TextArea,
+  TagInput,
+} from './formInputs';
 
-export { EmailInput, PasswordInput, UsernameInput, Checkbox, ConfirmPasswordInput, TextInput };
+export { EmailInput, PasswordInput, UsernameInput, Checkbox, ConfirmPasswordInput, TextInput, TextArea, TagInput };

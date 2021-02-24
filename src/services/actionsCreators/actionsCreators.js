@@ -78,11 +78,11 @@ const actionsCreators = {
     }
   },
 
-  async updateUser(dispatch, userObj, token) {
+  async updateUser(dispatch, userObj) {
     dispatch(actionsCreators.isFetchingOn());
 
     try {
-      const result = await realWorldService.updateUser(userObj, token);
+      const result = await realWorldService.updateUser(userObj);
       const action = {
         type: actions.updateUser,
         errors: '',
@@ -100,6 +100,23 @@ const actionsCreators = {
   },
 
   logOut: () => ({ type: actions.logOut }),
+
+  async createArticle(dispatch, article) {
+    dispatch(actionsCreators.isFetchingOn());
+
+    try {
+      const result = await realWorldService.createArticle(article);
+      const action = {
+        type: actions.createNewArticle,
+        newArticle: result.article.slug,
+      };
+      dispatch(action);
+      return dispatch(actionsCreators.isFetchingOff());
+    } catch (e) {
+      dispatch(actionsCreators.isFetchingOff());
+      return dispatch(actionsCreators.setLogginError(e.message));
+    }
+  },
 };
 
 export default actionsCreators;

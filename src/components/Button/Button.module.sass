@@ -19,11 +19,15 @@
         background-color: $text-color-sing-in
         cursor: auto
 
-.outlined
-    border: 1px solid $text-color-black
-
 .wide
     width: 100%
+
+.half-wide
+    max-width: 100%
+    min-width: 319px
+
+.wide-padding
+    padding: 8px 36px
 
 .margin-bottom
     margin-bottom: 8px
@@ -31,11 +35,20 @@
 .margin-right
     margin-right: 27px
 
+.margin-right-small
+    margin-right: 17px
+
 .green
     border-color: $green
     color: $green
     &:active
         background-color: $green-gray
+
+.red
+    border-color: $red
+    color: $red
+    &:active
+        background-color: $red-gray
 
 .blue
     border-color: $blue
@@ -43,6 +56,14 @@
     color: $text-color-white
     &:active
         background-color: $blue-gray
+
+.text-blue
+    color: $blue
+
+.outlined
+    border-width: 1px
+    border-style: solid
+    background-color: transparent
 
 .small
     padding: 6px 10px
