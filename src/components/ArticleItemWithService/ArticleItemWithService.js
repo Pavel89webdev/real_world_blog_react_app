@@ -7,7 +7,7 @@ import LoadingBar from '../LoadingBar';
 import actionsCreators from '../../services/actionsCreators';
 import ErrorMessage from '../ErrorMessage';
 
-function ArticleItemWithService({ articles, id, getArticleById, isFetching, error, errorMessage }) {
+function ArticleItemWithService({ articles, id, getArticleById, isFetching, error, errorMessage, logginUsername }) {
   const article = articles.find((item) => item.slug === id);
 
   if (article) {
@@ -17,23 +17,26 @@ function ArticleItemWithService({ articles, id, getArticleById, isFetching, erro
         title={title}
         likesCount={favoritesCount}
         tags={tagList}
-        userName={author.username}
+        username={author.username}
         publishDate={updatedAt}
         avatarUrl={author.image}
         description={description}
         body={body}
         key={slug}
         id={slug}
+        logginUsername={logginUsername}
       />
     );
   }
 
   const throttleGetArticleById = throttle(() => {
-    if (!article) return getArticleById(id);
+    if (article === undefined) {
+      return getArticleById(id);
+    }
     return null;
-  }, 1000);
+  }, 300);
 
-  if (!articles.length && !isFetching && !error) {
+  if (article === undefined && !isFetching && !error) {
     throttleGetArticleById();
   }
 
@@ -53,6 +56,7 @@ const mapStateToProps = (state) => ({
   isFetching: state.isFetching,
   error: state.errors.error,
   errorMessage: state.errors.message,
+  logginUsername: state.user.user.username,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -66,11 +70,13 @@ ArticleItemWithService.propTypes = {
   isFetching: PropTypes.bool.isRequired,
   error: PropTypes.bool,
   errorMessage: PropTypes.string,
+  logginUsername: PropTypes.string,
 };
 
 ArticleItemWithService.defaultProps = {
   error: false,
   errorMessage: 'no error',
+  logginUsername: '',
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ArticleItemWithService);

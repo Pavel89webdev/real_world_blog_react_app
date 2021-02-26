@@ -3,6 +3,7 @@ import actions from '../actions';
 const initialState = {
   articles: [],
   totalCount: null,
+  newArticle: null,
 };
 
 function reduceArticles(state = initialState, action) {
@@ -17,6 +18,41 @@ function reduceArticles(state = initialState, action) {
         articles: [...state.articles, { ...action.articles }],
         totalCount: action.totalCount,
       };
+    case actions.createNewArticle:
+      return {
+        ...state,
+        articles: [action.article],
+        newArticle: action.newArticle,
+      };
+    case actions.updateArticle:
+      return {
+        ...state,
+        articles: [action.article],
+        newArticle: action.newArticle,
+      };
+    case actions.clearJustCreateArticle:
+      return {
+        ...state,
+        newArticle: null,
+      };
+    case actions.deleteArticle: {
+      const newArticles = state.articles.filter((item) => item.slug !== action.articleId);
+      return {
+        articles: newArticles,
+        totalCount: --state.totalCount,
+        newArticle: null,
+      };
+    }
+    case actions.likeArticle: {
+      const newArticles = state.articles.map((item) => {
+        if (item.slug === action.article.slug) return action.article;
+        return item;
+      });
+      return {
+        ...state,
+        articles: newArticles,
+      };
+    }
     default:
       return state;
   }

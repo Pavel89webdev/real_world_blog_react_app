@@ -2,32 +2,42 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router';
-import Button from '../Button';
-import { Input, Checkbox } from '../formInputs';
-
 import actionsCreators from '../../services/actionsCreators';
 
-import classes from './RegistrationForm.module.sass';
+import Button from '../Button';
+import { Input } from '../formInputs';
 
-function RegistrationForm({ singUp, usernameError, emailError, passwordError, isFetching, isLoggin, history }) {
-  const [emailInput, setEmailInput] = useState('');
+import classes from './Profile.module.sass';
+
+function Profile({
+  username,
+  email,
+  isLoggin,
+  history,
+  setNewUserData,
+  isFetching,
+  usernameError,
+  emailError,
+  passwordError,
+  imageError,
+}) {
+  const { register, handleSubmit } = useForm();
+
+  const [emailInput, setEmailInput] = useState(email);
   const [emailErrorMessage, setEmailErrorMessage] = useState('');
 
-  const [usernameInput, setUsernameInput] = useState('');
+  const [usernameInput, setUsernameInput] = useState(username);
   const [usernameErrorMessage, setUsernameErrorMessage] = useState('');
+
+  const [imageInput, setImageInput] = useState('');
+  const [imageInputErrorMessage, setImageInputErrorMessage] = useState('');
 
   const [passwordInput, setPasswordInput] = useState('');
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
 
-  const [confirmPasswordInput, setConfirmPasswordInput] = useState('');
-  const [confirmPasswordInputErrorMessage, setConfirmPasswordInputErrorMessage] = useState('');
-
-  const { register, handleSubmit } = useForm();
-
-  if (isLoggin) {
-    history.push('/articles/page/1');
+  if (!isLoggin) {
+    history.push('/sing-in');
   }
 
   const onSubmit = (data) => {
@@ -43,8 +53,17 @@ function RegistrationForm({ singUp, usernameError, emailError, passwordError, is
       setUsernameErrorMessage('username should be from 3 to 20 letters');
       return;
     }
-    if (validUserName === true) {
+    if (validUserName !== false) {
       setUsernameErrorMessage('');
+    }
+
+    const validImage = imageInput.length > 5;
+    if (validImage === false) {
+      setImageInputErrorMessage('it is too short URL');
+      return;
+    }
+    if (validImage === true) {
+      setImageInputErrorMessage('');
     }
 
     const isPasswordValid = passwordInput.length > 7 && passwordInput.length < 41;
@@ -56,25 +75,15 @@ function RegistrationForm({ singUp, usernameError, emailError, passwordError, is
       setPasswordErrorMessage('');
     }
 
-    const confirmPassword = passwordInput === confirmPasswordInput;
-    if (confirmPassword === false) {
-      setConfirmPasswordInputErrorMessage('passwords are not match');
-      return;
+    for (const key in data) {
+      if (data[key].length === 0) delete data[key];
     }
-    if (confirmPassword === true) {
-      setConfirmPasswordInputErrorMessage('');
-    }
-    const newUserObj = {
-      username: data.username,
-      email: data.email,
-      password: data.password,
-    };
-    singUp(newUserObj);
+    setNewUserData(data);
   };
 
   return (
     <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
-      <div className={classes.title}>Create new account</div>
+      <div className={classes.title}>Profile</div>
       <div className={classes['input-title']}>Username</div>
       <Input
         name="username"
@@ -82,14 +91,12 @@ function RegistrationForm({ singUp, usernameError, emailError, passwordError, is
         type="text"
         minLength="3"
         maxLength="20"
-        required
-        placeholder="Username"
+        placeholder=""
         onInput={setUsernameInput}
         errorMessage={usernameError || usernameErrorMessage}
         ref={register}
       />
-
-      <div className={classes['input-title']}>Email address</div>
+      <div className={['input-title']}>Email address</div>
       <Input
         name="email"
         type="email"
@@ -101,7 +108,7 @@ function RegistrationForm({ singUp, usernameError, emailError, passwordError, is
         errorMessage={emailError || emailErrorMessage}
         onInput={setEmailInput}
       />
-      <div className={classes['input-title']}>Password</div>
+      <div className={classes['input-title']}>New password</div>
       <Input
         name="password"
         type="password"
@@ -111,68 +118,78 @@ function RegistrationForm({ singUp, usernameError, emailError, passwordError, is
         value={passwordInput}
         errorMessage={passwordError || passwordErrorMessage}
         onInput={setPasswordInput}
-        required
         ref={register}
       />
-      <div className={classes['input-title']}>Confirm password</div>
+
+      <div className={classes['input-title']}>Avatar image (url)</div>
       <Input
-        name="confirm password"
-        type="password"
-        minLength="8"
-        maxLength="40"
-        placeholder="Confirm password"
-        value={confirmPasswordInput}
-        errorMessage={confirmPasswordInputErrorMessage}
-        onInput={setConfirmPasswordInput}
-        required
+        name="image"
+        type="text"
+        minLength="3"
+        placeholder="Avatar URL"
+        ref={register}
+        value={imageInput}
+        errorMessage={imageError || imageInputErrorMessage}
+        onInput={setImageInput}
       />
-      <hr />
-      <Checkbox description="I agree to the processing of my personal information" required />
 
       <Button submit style={['wide', 'blue', 'margin-bottom']} disabled={isFetching} loading={isFetching}>
-        Create
+        Save
       </Button>
-      <div className={classes['sing-in']}>
-        Already have an account? <Link to="/sing-in">Sign In.</Link>
-      </div>
     </form>
   );
 }
 
-RegistrationForm.propTypes = {
-  singUp: PropTypes.func.isRequired,
+Profile.propTypes = {
+  username: PropTypes.string,
+  email: PropTypes.string,
+  isLoggin: PropTypes.bool.isRequired,
+  history: PropTypes.object.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+  setNewUserData: PropTypes.func.isRequired,
   usernameError: PropTypes.string,
   emailError: PropTypes.string,
   passwordError: PropTypes.string,
-  isFetching: PropTypes.bool.isRequired,
-  isLoggin: PropTypes.bool,
-  history: PropTypes.object.isRequired,
+  imageError: PropTypes.string,
 };
 
-RegistrationForm.defaultProps = {
+Profile.defaultProps = {
+  username: 'no username',
+  email: '',
   usernameError: '',
   emailError: '',
   passwordError: '',
-  isLoggin: false,
+  imageError: '',
 };
 
 const mapStateToProps = (state) => {
-  const { user } = state;
   const props = {
+    isLoggin: false,
     isFetching: state.isFetching,
-    isLoggin: user.isLoggin,
   };
-  if (user.errors) {
-    if (user.errors.username) props.usernameError = '' || user.errors.username[0];
-    if (user.errors.email) props.emailError = '' || user.errors.email[0];
-    if (user.errors.password) props.passwordError = '' || user.errors.password[0];
+
+  if (state.user.errors) {
+    const { errors } = state.user;
+    if (errors.username) props.usernameError = errors.username;
+    if (errors.email) props.emailError = errors.email;
+    if (errors.password) props.passwordError = errors.password;
+    if (errors.image) props.imageError = errors.image;
+  }
+
+  const userInState = state.user.user;
+  const { isLoggin } = state.user;
+
+  if (userInState && isLoggin) {
+    props.username = userInState.username;
+    props.email = userInState.email;
+    props.isLoggin = isLoggin;
   }
 
   return props;
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  singUp: (user) => actionsCreators.singUp(dispatch, user),
+  setNewUserData: (userObj) => actionsCreators.updateUser(dispatch, userObj),
 });
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(RegistrationForm));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Profile));

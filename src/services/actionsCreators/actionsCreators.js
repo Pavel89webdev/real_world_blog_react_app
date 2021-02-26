@@ -77,6 +77,97 @@ const actionsCreators = {
       return dispatch(actionsCreators.setLogginError(e.message));
     }
   },
+
+  async updateUser(dispatch, userObj) {
+    dispatch(actionsCreators.isFetchingOn());
+
+    try {
+      const result = await realWorldService.updateUser(userObj);
+      const action = {
+        type: actions.updateUser,
+        errors: '',
+      };
+
+      if (result.errors) action.errors = result.errors;
+      if (!result.errors) action.user = { ...result };
+
+      dispatch(action);
+      return dispatch(actionsCreators.isFetchingOff());
+    } catch (e) {
+      dispatch(actionsCreators.isFetchingOff());
+      return dispatch(actionsCreators.setLogginError(e.message));
+    }
+  },
+
+  logOut: () => ({ type: actions.logOut }),
+
+  async createArticle(dispatch, article) {
+    dispatch(actionsCreators.isFetchingOn());
+
+    try {
+      const result = await realWorldService.createArticle(article);
+      const action = {
+        type: actions.createNewArticle,
+        article: result.article,
+        newArticle: result.article.slug,
+      };
+      dispatch(action);
+      return dispatch(actionsCreators.isFetchingOff());
+    } catch (e) {
+      dispatch(actionsCreators.isFetchingOff());
+      return dispatch(actionsCreators.setLogginError(e.message));
+    }
+  },
+
+  async updateArticle(dispatch, article, id) {
+    dispatch(actionsCreators.isFetchingOn());
+
+    try {
+      const result = await realWorldService.updateArticle(article, id);
+      const action = {
+        type: actions.updateArticle,
+        article: result.article,
+        newArticle: result.article.slug,
+      };
+      dispatch(action);
+      return dispatch(actionsCreators.isFetchingOff());
+    } catch (e) {
+      dispatch(actionsCreators.isFetchingOff());
+      return dispatch(actionsCreators.setLogginError(e.message));
+    }
+  },
+
+  clearJustCreateArticle: () => ({ type: actions.clearJustCreateArticle }),
+
+  async deleteArticle(dispatch, id) {
+    dispatch(actionsCreators.isFetchingOn());
+
+    try {
+      await realWorldService.deleteArticle(id);
+      const action = {
+        type: actions.deleteArticle,
+        articleId: id,
+      };
+      dispatch(action);
+      return dispatch(actionsCreators.isFetchingOff());
+    } catch (e) {
+      dispatch(actionsCreators.isFetchingOff());
+      return dispatch(actionsCreators.setLogginError(e.message));
+    }
+  },
+
+  async likeArticle(dispatch, id) {
+    try {
+      const article = await realWorldService.likeArticle(id);
+      const action = {
+        type: actions.likeArticle,
+        article: article.article,
+      };
+      return dispatch(action);
+    } catch (e) {
+      return dispatch(actionsCreators.setLogginError(e.message));
+    }
+  },
 };
 
 export default actionsCreators;

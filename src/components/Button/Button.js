@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import classes from './Button.module.sass';
 
-function Button({ children, style, submit, disabled, loading }) {
+function Button({ children, style, submit, disabled, loading, onClick }) {
   let styles = null;
 
   if (Array.isArray(style)) {
@@ -14,7 +14,7 @@ function Button({ children, style, submit, disabled, loading }) {
   const resultClass = classNames(classes.base, styles);
 
   return (
-    <button className={resultClass} type={submit ? 'submit' : 'button'} disabled={disabled}>
+    <button className={resultClass} type={submit ? 'submit' : 'button'} disabled={disabled} onClick={onClick}>
       {loading ? 'loading' : children}
     </button>
   );
@@ -26,6 +26,7 @@ Button.propTypes = {
   submit: PropTypes.bool,
   disabled: PropTypes.bool,
   loading: PropTypes.bool,
+  onClick: PropTypes.func,
 };
 
 Button.defaultProps = {
@@ -34,6 +35,7 @@ Button.defaultProps = {
   submit: false,
   disabled: false,
   loading: false,
+  onClick: () => {},
 };
 
 export default Button;

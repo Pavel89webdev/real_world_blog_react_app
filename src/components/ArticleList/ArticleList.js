@@ -37,7 +37,7 @@ function ArticleList({ articles, isFetching, getArticles, page }) {
         title={title}
         likesCount={favoritesCount}
         tags={tagList}
-        userName={author.username}
+        username={author.username}
         publishDate={updatedAt}
         avatarUrl={author.image}
         description={description}

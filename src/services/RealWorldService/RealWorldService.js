@@ -1,5 +1,9 @@
+import setUserToLocalStorage from '../setUserToLocalStorage';
+
 class RealWorldService {
   apiBase = 'https://conduit.productionready.io/api';
+
+  token = '';
 
   async getResourse(url, options = null) {
     let result = null;
@@ -47,9 +51,75 @@ class RealWorldService {
   async singIn(userObj = { email: '', password: '' }) {
     const url = `${this.apiBase}/users/login`;
     const user = await this.registerNewUser(userObj, url);
-    console.log(user);
-
+    if (user.errors === undefined) {
+      setUserToLocalStorage(user.user, userObj.password);
+      this.token = user.user.token;
+    }
     return user;
+  }
+
+  async updateUser(userObj = {}) {
+    const url = `${this.apiBase}/user`;
+    const body = JSON.stringify({ user: { ...userObj } });
+    const options = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: ` Token ${this.token}`,
+      },
+      body,
+    };
+    const newUser = await this.getResourse(url, options);
+    return newUser;
+  }
+
+  async createArticle(articleObj = {}, url = null, method = null) {
+    if (url === null) url = `${this.apiBase}/articles`;
+    const body = JSON.stringify({ article: { ...articleObj } });
+    const options = {
+      method: method || 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: ` Token ${this.token}`,
+      },
+      body,
+    };
+    const newArticle = await this.getResourse(url, options);
+    return newArticle;
+  }
+
+  async updateArticle(articleObj = {}, id) {
+    const url = `${this.apiBase}/articles/${id}`;
+
+    const newArticle = await this.createArticle(articleObj, url, 'PUT');
+    return newArticle;
+  }
+
+  async deleteArticle(id) {
+    const url = `${this.apiBase}/articles/${id}`;
+    const options = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: ` Token ${this.token}`,
+      },
+    };
+
+    const response = await this.getResourse(url, options);
+    return response;
+  }
+
+  async likeArticle(id) {
+    const url = `${this.apiBase}/articles/${id}/favorite`;
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: ` Token ${this.token}`,
+      },
+    };
+    const article = await this.getResourse(url, options);
+    return article;
   }
 }
 

@@ -7,6 +7,13 @@ const actions = {
   error: 'ERROR',
   signUp: 'SING_UP',
   singIn: 'SING_IN',
+  updateUser: 'UPDATE_USER',
+  logOut: 'LOG_OUT',
+  createNewArticle: 'CREATE_NEW_ARTICLE',
+  clearJustCreateArticle: 'CLEAR_JUST_NEW_ARTICLE',
+  updateArticle: 'UPDATE_ARTICLE',
+  deleteArticle: 'DELETE_ARTICLE',
+  likeArticle: 'LIKE_ARTICLE',
 };
 
 export default actions;
