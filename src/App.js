@@ -13,6 +13,7 @@ import RegistrationForm from './components/RegistrationForm';
 import SingIn from './components/SingInForm';
 import Profile from './components/Profile';
 import NewArticle from './components/NewArticle';
+import EditArticle from './components/EditArticle';
 
 import reduceArticles from './services/reduceArticles';
 import reduceFetching from './services/reduceFetching';
@@ -21,6 +22,7 @@ import reduceErrors from './services/reduceErrors';
 import reduceLogging from './services/reduceLogging';
 import actionsCreators from './services/actionsCreators';
 import getUserFromLocalStorage from './services/getUserFromLocalStorage';
+import PrivateRoute from './components/PrivateRoute';
 
 const composeEnhancers =
   typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
@@ -47,7 +49,7 @@ const store = createStore(
 
 const singInUser = getUserFromLocalStorage();
 
-if (singInUser) {
+if (singInUser !== false) {
   store.dispatch(() => actionsCreators.singIn(store.dispatch, singInUser));
 }
 
@@ -58,8 +60,7 @@ function App() {
         <Header />
         <Main>
           <Switch>
-            <Route path="/new-article" component={NewArticle} />
-            <Route path="/profile" component={Profile} />
+            <Redirect exact from="/" to="/articles/page/1" />
             <Route path="/sing-in" component={SingIn} />
             <Route
               exact
@@ -78,7 +79,17 @@ function App() {
               }}
             />
             <Route path="/sing-up" component={RegistrationForm} />
-            <Redirect exact from="/" to="/new-article" />
+
+            <PrivateRoute path="/new-article" component={NewArticle} />
+            <PrivateRoute Component={Profile} path="/profile" />
+            <PrivateRoute
+              exact
+              path="/articles/:id/edit"
+              render={({ match }) => {
+                const { id } = match.params;
+                return <EditArticle id={id} />;
+              }}
+            />
 
             <Route render={() => <ErrorMessage description="404: there is no page on this URL :(" />} />
           </Switch>

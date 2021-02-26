@@ -108,8 +108,47 @@ const actionsCreators = {
       const result = await realWorldService.createArticle(article);
       const action = {
         type: actions.createNewArticle,
+        article: result.article,
         newArticle: result.article.slug,
       };
+      dispatch(action);
+      return dispatch(actionsCreators.isFetchingOff());
+    } catch (e) {
+      dispatch(actionsCreators.isFetchingOff());
+      return dispatch(actionsCreators.setLogginError(e.message));
+    }
+  },
+
+  async updateArticle(dispatch, article, id) {
+    dispatch(actionsCreators.isFetchingOn());
+
+    try {
+      const result = await realWorldService.updateArticle(article, id);
+      const action = {
+        type: actions.updateArticle,
+        article: result.article,
+        newArticle: result.article.slug,
+      };
+      dispatch(action);
+      return dispatch(actionsCreators.isFetchingOff());
+    } catch (e) {
+      dispatch(actionsCreators.isFetchingOff());
+      return dispatch(actionsCreators.setLogginError(e.message));
+    }
+  },
+
+  clearJustCreateArticle: () => ({ type: actions.clearJustCreateArticle }),
+
+  async deleteArticle(dispatch, id) {
+    dispatch(actionsCreators.isFetchingOn());
+
+    try {
+      await realWorldService.deleteArticle(id);
+      const action = {
+        type: actions.deleteArticle,
+        articleId: id,
+      };
+      console.log(action);
       dispatch(action);
       return dispatch(actionsCreators.isFetchingOff());
     } catch (e) {

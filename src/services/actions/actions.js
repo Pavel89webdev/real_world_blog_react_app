@@ -10,6 +10,9 @@ const actions = {
   updateUser: 'UPDATE_USER',
   logOut: 'LOG_OUT',
   createNewArticle: 'CREATE_NEW_ARTICLE',
+  clearJustCreateArticle: 'CLEAR_JUST_NEW_ARTICLE',
+  updateArticle: 'UPDATE_ARTICLE',
+  deleteArticle: 'DELETE_ARTICLE',
 };
 
 export default actions;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { useForm } from 'react-hook-form';
@@ -6,7 +6,7 @@ import { withRouter } from 'react-router';
 import actionsCreators from '../../services/actionsCreators';
 
 import Button from '../Button';
-import { EmailInput, UsernameInput, PasswordInput } from '../formInputs';
+import { Input } from '../formInputs';
 
 import classes from './Profile.module.sass';
 
@@ -24,11 +24,58 @@ function Profile({
 }) {
   const { register, handleSubmit } = useForm();
 
+  const [emailInput, setEmailInput] = useState(email);
+  const [emailErrorMessage, setEmailErrorMessage] = useState('');
+
+  const [usernameInput, setUsernameInput] = useState(username);
+  const [usernameErrorMessage, setUsernameErrorMessage] = useState('');
+
+  const [imageInput, setImageInput] = useState('');
+  const [imageInputErrorMessage, setImageInputErrorMessage] = useState('');
+
+  const [passwordInput, setPasswordInput] = useState('');
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+
   if (!isLoggin) {
     history.push('/sing-in');
   }
 
   const onSubmit = (data) => {
+    const isEmail = emailInput.includes('@', 0);
+    if (isEmail === false) {
+      setEmailErrorMessage('email should contain "@"');
+      return;
+    }
+    if (isEmail === true) setEmailErrorMessage('');
+
+    const validUserName = usernameInput.length > 2 && usernameInput.length < 21;
+    if (validUserName === false) {
+      console.log('case');
+      setUsernameErrorMessage('username should be from 3 to 20 letters');
+      return;
+    }
+    if (validUserName !== false) {
+      setUsernameErrorMessage('');
+    }
+
+    const validImage = imageInput.length > 5;
+    if (validImage === false) {
+      setImageInputErrorMessage('it is too short URL');
+      return;
+    }
+    if (validImage === true) {
+      setImageInputErrorMessage('');
+    }
+
+    const isPasswordValid = passwordInput.length > 7 && passwordInput.length < 41;
+    if (isPasswordValid === false) {
+      setPasswordErrorMessage('password must be from 8 to 40 letters');
+      return;
+    }
+    if (isPasswordValid === true) {
+      setPasswordErrorMessage('');
+    }
+
     console.log(data);
     for (const key in data) {
       if (data[key].length === 0) delete data[key];
@@ -40,14 +87,53 @@ function Profile({
     <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
       <div className={classes.title}>Profile</div>
       <div className={classes['input-title']}>Username</div>
-      <UsernameInput placeholder={username} errorMessage={usernameError} ref={register} />
+      <Input
+        name="username"
+        value={usernameInput}
+        type="text"
+        minLength="3"
+        maxLength="20"
+        placeholder=""
+        onInput={setUsernameInput}
+        errorMessage={usernameError || usernameErrorMessage}
+        ref={register}
+      />
       <div className={['input-title']}>Email address</div>
-      <EmailInput placeholder={email} errorMessage={emailError} ref={register} />
+      <Input
+        name="email"
+        type="email"
+        minLength="3"
+        placeholder="Email"
+        ref={register}
+        required
+        value={emailInput}
+        errorMessage={emailError || emailErrorMessage}
+        onInput={setEmailInput}
+      />
       <div className={classes['input-title']}>New password</div>
-      <PasswordInput errorMessage={passwordError} ref={register} />
+      <Input
+        name="password"
+        type="password"
+        minLength="8"
+        maxLength="40"
+        placeholder="Password"
+        value={passwordInput}
+        errorMessage={passwordError || passwordErrorMessage}
+        onInput={setPasswordInput}
+        ref={register}
+      />
 
       <div className={classes['input-title']}>Avatar image (url)</div>
-      <UsernameInput errorMessage={imageError} ref={register} name="image" />
+      <Input
+        name="image"
+        type="text"
+        minLength="3"
+        placeholder="Avatar URL"
+        ref={register}
+        value={imageInput}
+        errorMessage={imageError || imageInputErrorMessage}
+        onInput={setImageInput}
+      />
 
       <Button submit style={['wide', 'blue', 'margin-bottom']} disabled={isFetching} loading={isFetching}>
         Save
@@ -71,7 +157,7 @@ Profile.propTypes = {
 
 Profile.defaultProps = {
   username: 'no username',
-  email: 'no email',
+  email: '',
   usernameError: '',
   emailError: '',
   passwordError: '',

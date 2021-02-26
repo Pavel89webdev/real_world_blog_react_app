@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import actionsCreators from '../../services/actionsCreators';
 import deleteUserfromLocaleStorage from '../../services/deleteUserfromLocaleStorage';
@@ -11,7 +10,7 @@ import avatar from '../../img/avatar.png';
 
 import classes from './Header.module.sass';
 
-function Header({ isLoggin, userName, imgUrl, logOut, history }) {
+function Header({ isLoggin, userName, imgUrl, logOut }) {
   const img = imgUrl || avatar;
 
   function loggingOut() {
@@ -25,21 +24,15 @@ function Header({ isLoggin, userName, imgUrl, logOut, history }) {
       <div className={classes.wrapper}>
         {isLoggin && (
           <>
-            <Button style={['outlined', 'green', 'small', 'margin-right']}>Create article</Button>
+            <Link to="/new-article">
+              <Button style={['outlined', 'green', 'small', 'margin-right']}>Create article</Button>
+            </Link>
             <div className={classes.username}>{userName}</div>
-            <div
-              className={classes.avatar}
-              onClick={() => {
-                history.push('/profile');
-              }}
-              onKeyDown={(e) => {
-                if (e.code === 'Enter') history.push('/profile');
-              }}
-              role="button"
-              tabIndex="0"
-            >
-              <img src={img} alt="avatar" />
-            </div>
+            <Link to="/profile">
+              <div className={classes.avatar}>
+                <img src={img} alt="avatar" />
+              </div>
+            </Link>
             <Button style={['outlined']} onClick={loggingOut}>
               Log Out
             </Button>
@@ -66,7 +59,6 @@ Header.propTypes = {
   userName: PropTypes.string,
   imgUrl: PropTypes.string,
   logOut: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired,
 };
 
 Header.defaultProps = {
@@ -91,4 +83,4 @@ const mapDispatchToProps = (dispatch) => ({
   logOut: () => dispatch(actionsCreators.logOut()),
 });
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Header));
+export default connect(mapStateToProps, mapDispatchToProps)(Header);

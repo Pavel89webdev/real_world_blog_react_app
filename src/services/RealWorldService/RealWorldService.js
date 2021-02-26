@@ -51,8 +51,8 @@ class RealWorldService {
   async singIn(userObj = { email: '', password: '' }) {
     const url = `${this.apiBase}/users/login`;
     const user = await this.registerNewUser(userObj, url);
-    if (!user.errors) {
-      setUserToLocalStorage(userObj);
+    if (user.errors === undefined) {
+      setUserToLocalStorage(user.user, userObj.password);
       this.token = user.user.token;
     }
     return user;
@@ -73,11 +73,11 @@ class RealWorldService {
     return newUser;
   }
 
-  async createArticle(articleObj = {}) {
-    const url = `${this.apiBase}/articles`;
+  async createArticle(articleObj = {}, url = null, method = null) {
+    if (url === null) url = `${this.apiBase}/articles`;
     const body = JSON.stringify({ article: { ...articleObj } });
     const options = {
-      method: 'POST',
+      method: method || 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: ` Token ${this.token}`,
@@ -86,6 +86,27 @@ class RealWorldService {
     };
     const newArticle = await this.getResourse(url, options);
     return newArticle;
+  }
+
+  async updateArticle(articleObj = {}, id) {
+    const url = `${this.apiBase}/articles/${id}`;
+
+    const newArticle = await this.createArticle(articleObj, url, 'PUT');
+    return newArticle;
+  }
+
+  async deleteArticle(id) {
+    const url = `${this.apiBase}/articles/${id}`;
+    const options = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: ` Token ${this.token}`,
+      },
+    };
+
+    const response = await this.getResourse(url, options);
+    return response;
   }
 }
 

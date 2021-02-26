@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -10,15 +10,37 @@ import classes from './SingInForm.module.sass';
 import Button from '../Button';
 import FormErrorMessage from '../FormErrorMessage';
 
-import { EmailInput, PasswordInput } from '../formInputs';
+import { Input } from '../formInputs';
 
 function SingInForm({ singIn, isLoggin, history, isFetching, emailOrPasswordInvalid }) {
   // eslint-disable-next-line prefer-const
   const { register, handleSubmit } = useForm();
 
+  const [emailInput, setEmailInput] = useState('');
+  const [emailErrorMessage, setEmailErrorMessage] = useState('');
+
+  const [passwordInput, setPasswordInput] = useState('');
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+
   if (isLoggin) history.push('/articles/page/1');
 
   const onSubmit = (data) => {
+    const isEmail = emailInput.includes('@', 0);
+    if (isEmail === false) {
+      setEmailErrorMessage('email should contain "@"');
+      return;
+    }
+    if (isEmail === true) setEmailErrorMessage('');
+
+    const isPasswordValid = passwordInput.length > 7 && passwordInput.length < 41;
+    if (isPasswordValid === false) {
+      setPasswordErrorMessage('password must be from 8 to 40 letters');
+      return;
+    }
+    if (isPasswordValid === true) {
+      setPasswordErrorMessage('');
+    }
+
     const newUserObj = {
       email: data.email,
       password: data.password,
@@ -30,9 +52,30 @@ function SingInForm({ singIn, isLoggin, history, isFetching, emailOrPasswordInva
     <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
       <div className={classes.title}>Sing In</div>
       <div className={classes['input-title']}>Email address</div>
-      <EmailInput ref={register} required />
+      <Input
+        name="email"
+        type="email"
+        minLength="3"
+        placeholder="Email"
+        ref={register}
+        required
+        value={emailInput}
+        errorMessage={emailErrorMessage}
+        onInput={setEmailInput}
+      />
       <div className={classes['input-title']}>Password</div>
-      <PasswordInput ref={register} required />
+      <Input
+        name="password"
+        type="password"
+        minLength="8"
+        maxLength="40"
+        placeholder="Password"
+        value={passwordInput}
+        errorMessage={passwordErrorMessage}
+        onInput={setPasswordInput}
+        ref={register}
+        required
+      />
       <Button submit style={['wide', 'blue', 'margin-bottom']} disabled={isFetching} loading={isFetching}>
         Login
       </Button>
