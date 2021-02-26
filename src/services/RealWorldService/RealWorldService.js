@@ -108,6 +108,19 @@ class RealWorldService {
     const response = await this.getResourse(url, options);
     return response;
   }
+
+  async likeArticle(id) {
+    const url = `${this.apiBase}/articles/${id}/favorite`;
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: ` Token ${this.token}`,
+      },
+    };
+    const article = await this.getResourse(url, options);
+    return article;
+  }
 }
 
 export default new RealWorldService();

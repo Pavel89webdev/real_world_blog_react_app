@@ -30,8 +30,10 @@ function ArticleItem({
   id,
   logginUsername,
   deleteArticle,
+  onLikeArticle,
 }) {
   const [isActive, setActive] = useState(false);
+  const [isLiked, setLiked] = useState(false);
 
   if (!title && !likesCount && !tags && !username && !publishDate && !avatarUrl && !description && !body) {
     return <div className={classes.article}>No data :(</div>;
@@ -41,6 +43,11 @@ function ArticleItem({
 
   function confirm() {
     deleteArticle(id);
+  }
+
+  function onLike() {
+    onLikeArticle(id);
+    setLiked(true);
   }
 
   const bodyClasses = isActive ? classNames(classes.body, classes.active) : classes.body;
@@ -60,7 +67,17 @@ function ArticleItem({
             <Link to={link}>
               <div className={classes.title}>{title} </div>
             </Link>
-            <div className={classes.likes}>{likesCount}</div>
+            <div
+              className={classNames(classes.likes, isLiked ? classes.liked : null)}
+              tabIndex="0"
+              role="button"
+              onKeyPress={(e) => {
+                if (e.code === 'Enter') onLike();
+              }}
+              onClick={onLike}
+            >
+              {likesCount}
+            </div>
           </div>
           <div className={classes.tags}>{renderTags()}</div>
         </div>
@@ -119,6 +136,7 @@ ArticleItem.propTypes = {
   id: PropTypes.string,
   logginUsername: PropTypes.string,
   deleteArticle: PropTypes.func.isRequired,
+  onLikeArticle: PropTypes.func.isRequired,
 };
 
 ArticleItem.defaultProps = {
@@ -140,6 +158,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   deleteArticle: (id) => actionsCreators.deleteArticle(dispatch, id),
+  onLikeArticle: (id) => actionsCreators.likeArticle(dispatch, id),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ArticleItem);

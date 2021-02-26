@@ -50,7 +50,6 @@ function Profile({
 
     const validUserName = usernameInput.length > 2 && usernameInput.length < 21;
     if (validUserName === false) {
-      console.log('case');
       setUsernameErrorMessage('username should be from 3 to 20 letters');
       return;
     }
@@ -76,7 +75,6 @@ function Profile({
       setPasswordErrorMessage('');
     }
 
-    console.log(data);
     for (const key in data) {
       if (data[key].length === 0) delete data[key];
     }

@@ -13,6 +13,7 @@ const actions = {
   clearJustCreateArticle: 'CLEAR_JUST_NEW_ARTICLE',
   updateArticle: 'UPDATE_ARTICLE',
   deleteArticle: 'DELETE_ARTICLE',
+  likeArticle: 'LIKE_ARTICLE',
 };
 
 export default actions;

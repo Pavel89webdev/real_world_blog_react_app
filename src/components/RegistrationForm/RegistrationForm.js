@@ -31,7 +31,6 @@ function RegistrationForm({ singUp, usernameError, emailError, passwordError, is
   }
 
   const onSubmit = (data) => {
-    console.log(data);
     const isEmail = emailInput.includes('@', 0);
     if (isEmail === false) {
       setEmailErrorMessage('email should contain "@"');
@@ -65,7 +64,6 @@ function RegistrationForm({ singUp, usernameError, emailError, passwordError, is
     if (confirmPassword === true) {
       setConfirmPasswordInputErrorMessage('');
     }
-    console.log('case');
     const newUserObj = {
       username: data.username,
       email: data.email,

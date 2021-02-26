@@ -43,6 +43,16 @@ function reduceArticles(state = initialState, action) {
         newArticle: null,
       };
     }
+    case actions.likeArticle: {
+      const newArticles = state.articles.map((item) => {
+        if (item.slug === action.article.slug) return action.article;
+        return item;
+      });
+      return {
+        ...state,
+        articles: newArticles,
+      };
+    }
     default:
       return state;
   }

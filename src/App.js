@@ -1,8 +1,8 @@
 import React from 'react';
-import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
-import reduxThunk from 'redux-thunk';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
+
+import store from './services/store';
 
 import Main from './components/Main';
 import Header from './components/Header';
@@ -15,37 +15,9 @@ import Profile from './components/Profile';
 import NewArticle from './components/NewArticle';
 import EditArticle from './components/EditArticle';
 
-import reduceArticles from './services/reduceArticles';
-import reduceFetching from './services/reduceFetching';
-import reducePagination from './services/reducePagination';
-import reduceErrors from './services/reduceErrors';
-import reduceLogging from './services/reduceLogging';
 import actionsCreators from './services/actionsCreators';
 import getUserFromLocalStorage from './services/getUserFromLocalStorage';
 import PrivateRoute from './components/PrivateRoute';
-
-const composeEnhancers =
-  typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-        // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
-      })
-    : compose;
-
-const enhancer = composeEnhancers(
-  applyMiddleware(reduxThunk)
-  // other store enhancers if any
-);
-
-const store = createStore(
-  combineReducers({
-    articles: reduceArticles,
-    isFetching: reduceFetching,
-    page: reducePagination,
-    errors: reduceErrors,
-    user: reduceLogging,
-  }),
-  enhancer
-);
 
 const singInUser = getUserFromLocalStorage();
 

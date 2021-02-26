@@ -31,6 +31,7 @@
     margin-left: 13px
     padding-left: 21px
     position: relative
+    outline: none
     &::before
         content: ""
         position: absolute
@@ -41,6 +42,15 @@
         width: 16px
         height: 14px
         background: url('/img/like.svg') no-repeat center center/cover
+        cursor: pointer
+        transition: all 0.3s
+    &:active
+        &::before
+            transform: translateY(-50%) scale(1.2)
+
+.liked
+    &::before
+        background-image: url('/img/like2.svg')
 
 .tags>p
     margin: 0
@@ -69,6 +79,7 @@
 .description
     line-height: 22px
     max-width: 80%
+    cursor: pointer
 
 .text-grey
     color: $text-color-gray

@@ -148,11 +148,23 @@ const actionsCreators = {
         type: actions.deleteArticle,
         articleId: id,
       };
-      console.log(action);
       dispatch(action);
       return dispatch(actionsCreators.isFetchingOff());
     } catch (e) {
       dispatch(actionsCreators.isFetchingOff());
+      return dispatch(actionsCreators.setLogginError(e.message));
+    }
+  },
+
+  async likeArticle(dispatch, id) {
+    try {
+      const article = await realWorldService.likeArticle(id);
+      const action = {
+        type: actions.likeArticle,
+        article: article.article,
+      };
+      return dispatch(action);
+    } catch (e) {
       return dispatch(actionsCreators.setLogginError(e.message));
     }
   },
