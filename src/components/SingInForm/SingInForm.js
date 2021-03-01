@@ -9,11 +9,11 @@ import actionsCreators from '../../services/actionsCreators';
 import classes from './SingInForm.module.sass';
 import Button from '../Button';
 import FormErrorMessage from '../FormErrorMessage';
+import LoadingBar from '../LoadingBar';
 
 import { Input } from '../formInputs';
 
 function SingInForm({ singIn, isLoggin, history, isFetching, emailOrPasswordInvalid }) {
-  // eslint-disable-next-line prefer-const
   const { register, handleSubmit } = useForm();
 
   const [emailInput, setEmailInput] = useState('');
@@ -22,10 +22,14 @@ function SingInForm({ singIn, isLoggin, history, isFetching, emailOrPasswordInva
   const [passwordInput, setPasswordInput] = useState('');
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
 
-  if (isLoggin) history.push('/articles/page/1');
+  if (isLoggin) {
+    history.push('/articles/page/1');
+    return <LoadingBar />;
+  }
 
   const onSubmit = (data) => {
     const isEmail = emailInput.includes('@', 0);
+
     if (isEmail === false) {
       setEmailErrorMessage('email should contain "@"');
       return;
@@ -92,17 +96,14 @@ SingInForm.propTypes = {
   isLoggin: PropTypes.bool.isRequired,
   history: PropTypes.object.isRequired,
   isFetching: PropTypes.bool.isRequired,
-  emailOrPasswordInvalid: PropTypes.bool,
-};
-
-SingInForm.defaultProps = {
-  emailOrPasswordInvalid: false,
+  emailOrPasswordInvalid: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = (state) => {
   const props = {
     isLoggin: state.user.isLoggin,
     isFetching: state.isFetching,
+    emailOrPasswordInvalid: false,
   };
 
   if (state.user.errors) {
