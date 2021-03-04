@@ -11,7 +11,7 @@ function ArticleItemWithService({ articles, id, getArticleById, isFetching, erro
   const article = articles.find((item) => item.slug === id);
 
   if (article) {
-    const { title, favoritesCount, tagList, author, updatedAt, description, slug, body } = article;
+    const { title, favoritesCount, tagList, author, updatedAt, description, slug, body, favorited } = article;
     return (
       <ArticleItem
         title={title}
@@ -25,6 +25,7 @@ function ArticleItemWithService({ articles, id, getArticleById, isFetching, erro
         key={slug}
         id={slug}
         logginUsername={logginUsername}
+        favorited={favorited}
       />
     );
   }

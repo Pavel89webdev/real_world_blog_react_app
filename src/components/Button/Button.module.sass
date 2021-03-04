@@ -11,8 +11,17 @@
     border: none
     border-radius: 5px
     margin-right: 20px
+    position: relative
     &:active
-        background-color: #ccc
+        padding-bottom: 8px
+        border-color: #000
+        border-top-width: 2px
+        border-top-style: solid
+
+    &:focus
+        outline: 1px solid rgba(0, 0, 0, 0.5)
+        outline-offset: -3px
+        outline-style: auto
     &:disabled
         background-color: $text-color-sing-in
         cursor: auto
@@ -40,20 +49,20 @@
     border-color: $green
     color: $green
     &:active
-        background-color: $green-gray
+        border-color: $green
 
 .red
     border-color: $red
     color: $red
     &:active
-        background-color: $red-gray
+        border-color: $red
 
 .blue
     border-color: $blue
     background-color: $blue
     color: $text-color-white
     &:active
-        background-color: $blue-gray
+        border-color: $blue
 
 .text-blue
     color: $blue

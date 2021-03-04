@@ -47,6 +47,21 @@
     &:active
         &::before
             transform: translateY(-50%) scale(1.2)
+    &-disabled
+        &::before
+            content: ""
+            position: absolute
+            left: 0px
+            top: 50%
+            transform: translateY(-50%)
+            display: block
+            width: 16px
+            height: 14px
+            background: url('/img/like.svg') no-repeat center center/cover
+            cursor: auto
+        &:active
+            &::before
+                transform: translateY(-50%)
 
 .liked
     &::before

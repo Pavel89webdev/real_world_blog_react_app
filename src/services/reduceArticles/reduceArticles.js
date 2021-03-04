@@ -13,6 +13,11 @@ function reduceArticles(state = initialState, action) {
         articles: action.articles,
         totalCount: action.totalCount,
       };
+    case actions.getMyArticles:
+      return {
+        articles: [...action.articles],
+        totalCount: action.totalCount,
+      };
     case actions.getOneArticle:
       return {
         articles: [...state.articles, { ...action.articles }],
@@ -41,16 +46,6 @@ function reduceArticles(state = initialState, action) {
         articles: newArticles,
         totalCount: --state.totalCount,
         newArticle: null,
-      };
-    }
-    case actions.likeArticle: {
-      const newArticles = state.articles.map((item) => {
-        if (item.slug === action.article.slug) return action.article;
-        return item;
-      });
-      return {
-        ...state,
-        articles: newArticles,
       };
     }
     default:

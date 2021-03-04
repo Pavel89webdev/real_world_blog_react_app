@@ -10,7 +10,7 @@ import './Pagination.sass';
 
 import pageSize from './pageSize';
 
-function Pagination({ total, onChangePage, page, history, getNewArticles }) {
+function Pagination({ total, page, history }) {
   return (
     <AntdPagination
       size="small"
@@ -19,10 +19,7 @@ function Pagination({ total, onChangePage, page, history, getNewArticles }) {
       pageSize={pageSize}
       showSizeChanger={false}
       onChange={(newPage) => {
-        onChangePage(newPage);
         history.push(`/articles/page/${newPage}`);
-        const offset = (newPage - 1) * pageSize;
-        getNewArticles(offset);
       }}
     />
   );
@@ -30,10 +27,8 @@ function Pagination({ total, onChangePage, page, history, getNewArticles }) {
 
 Pagination.propTypes = {
   total: PropTypes.number,
-  onChangePage: PropTypes.func.isRequired,
   page: PropTypes.number,
   history: PropTypes.object.isRequired,
-  getNewArticles: PropTypes.func.isRequired,
 };
 
 Pagination.defaultProps = {
@@ -43,7 +38,6 @@ Pagination.defaultProps = {
 
 const mapStateToProps = (state) => ({
   total: state.articles.totalCount,
-  page: state.page,
 });
 
 const mapDispatchToProps = (dispatch) => ({

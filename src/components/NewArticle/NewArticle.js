@@ -22,12 +22,10 @@ function NewArticle({
   createArticle,
   updateArticle,
   loading,
-  isLoggin,
   justCreatedArticle,
   clearJustCreateArticle,
   history,
 }) {
-  if (isLoggin === false) history.push('/sing-in');
   if (justCreatedArticle) {
     history.push(`/article/${justCreatedArticle}`);
     clearJustCreateArticle();
@@ -180,7 +178,6 @@ NewArticle.propTypes = {
   createArticle: PropTypes.func.isRequired,
   updateArticle: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
-  isLoggin: PropTypes.bool.isRequired,
   justCreatedArticle: PropTypes.string,
   history: PropTypes.object.isRequired,
   title: PropTypes.string,

@@ -2,15 +2,24 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
+import { withRouter } from 'react-router';
 
 import actionsCreators from '../../services/actionsCreators';
 
 import LoadingBar from '../LoadingBar';
 import ErrorMessage from '../ErrorMessage';
 import NewArticle from '../NewArticle';
+import getUsernameFromLocaleSorage from '../../services/getUsernameFromLocaleSorage';
 
-function EditArticle({ articles, id, getArticleById, isFetching, error, errorMessage, isLoggin }) {
+function EditArticle({ articles, id, getArticleById, isFetching, error, errorMessage, isLoggin, username, history }) {
+  if (username === null) username = getUsernameFromLocaleSorage();
+
   const article = articles.find((item) => item.slug === id);
+
+  if (article && article.author.username !== username) {
+    history.push(`/article/${id}`);
+    return null;
+  }
 
   if (article) {
     const { title, description, body, tagList } = article;
@@ -59,11 +68,14 @@ EditArticle.propTypes = {
   id: PropTypes.string.isRequired,
   error: PropTypes.bool,
   errorMessage: PropTypes.string,
+  history: PropTypes.object.isRequired,
+  username: PropTypes.string,
 };
 
 EditArticle.defaultProps = {
   error: false,
   errorMessage: '',
+  username: null,
 };
 
 const mapStateToProps = (state) => ({
@@ -72,10 +84,11 @@ const mapStateToProps = (state) => ({
   articles: state.articles.articles,
   error: state.errors.error,
   errorMessage: state.errors.message,
+  username: state.user.user.username,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   getArticleById: (id) => actionsCreators.getOneArticle(dispatch, id),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditArticle);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(EditArticle));

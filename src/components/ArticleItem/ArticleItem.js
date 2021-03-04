@@ -8,6 +8,8 @@ import classNames from 'classnames';
 
 import { Popconfirm /* message */ } from 'antd';
 
+import realWorldService from '../../services/RealWorldService';
+
 import Button from '../Button';
 
 import actionsCreators from '../../services/actionsCreators';
@@ -29,11 +31,13 @@ function ArticleItem({
   body,
   id,
   logginUsername,
+  favorited,
   deleteArticle,
-  onLikeArticle,
+  isLoggin,
 }) {
   const [isActive, setActive] = useState(false);
-  const [isLiked, setLiked] = useState(false);
+  const [isLiked, setLiked] = useState(favorited);
+  const [likesCountState, setLikesCountState] = useState(likesCount);
 
   if (!title && !likesCount && !tags && !username && !publishDate && !avatarUrl && !description && !body) {
     return <div className={classes.article}>No data :(</div>;
@@ -46,8 +50,17 @@ function ArticleItem({
   }
 
   function onLike() {
-    onLikeArticle(id);
-    setLiked(true);
+    if (isLiked) {
+      setLikesCountState(likesCountState - 1);
+      setLiked(false);
+      realWorldService.unLikeArticle(id);
+      return;
+    }
+    if (!isLiked) {
+      setLikesCountState(likesCountState + 1);
+      setLiked(true);
+      realWorldService.likeArticle(id);
+    }
   }
 
   const bodyClasses = isActive ? classNames(classes.body, classes.active) : classes.body;
@@ -67,17 +80,22 @@ function ArticleItem({
             <Link to={link}>
               <div className={classes.title}>{title} </div>
             </Link>
-            <div
-              className={classNames(classes.likes, isLiked ? classes.liked : null)}
-              tabIndex="0"
-              role="button"
-              onKeyPress={(e) => {
-                if (e.code === 'Enter') onLike();
-              }}
-              onClick={onLike}
-            >
-              {likesCount}
-            </div>
+
+            {isLoggin && (
+              <div
+                className={classNames(classes.likes, isLiked ? classes.liked : null)}
+                tabIndex="0"
+                role="button"
+                onKeyPress={(e) => {
+                  if (e.code === 'Enter') onLike();
+                }}
+                onClick={onLike}
+              >
+                {likesCountState}
+              </div>
+            )}
+
+            {!isLoggin && <div className={classNames(classes.likes, classes['likes-disabled'])}>{likesCountState}</div>}
           </div>
           <div className={classes.tags}>{renderTags()}</div>
         </div>
@@ -111,7 +129,7 @@ function ArticleItem({
               <Button style={['outlined', 'red']}>Delete</Button>
             </Popconfirm>
 
-            <Link to={`/articles/${id}/edit`}>
+            <Link to={`/article/${id}/edit`}>
               <Button style={['outlined', 'green']}>Edit</Button>
             </Link>
           </div>
@@ -136,12 +154,13 @@ ArticleItem.propTypes = {
   id: PropTypes.string,
   logginUsername: PropTypes.string,
   deleteArticle: PropTypes.func.isRequired,
-  onLikeArticle: PropTypes.func.isRequired,
+  isLoggin: PropTypes.bool.isRequired,
+  favorited: PropTypes.bool.isRequired,
 };
 
 ArticleItem.defaultProps = {
   title: 'title',
-  likesCount: 1,
+  likesCount: 0,
   tags: ['Tag1', 'Tag2'],
   username: 'username',
   publishDate: '2021-02-15T10:20:29.238Z',
@@ -154,11 +173,11 @@ ArticleItem.defaultProps = {
 
 const mapStateToProps = (state) => ({
   logginUsername: state.user.user.username,
+  isLoggin: state.user.isLoggin,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   deleteArticle: (id) => actionsCreators.deleteArticle(dispatch, id),
-  onLikeArticle: (id) => actionsCreators.likeArticle(dispatch, id),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ArticleItem);

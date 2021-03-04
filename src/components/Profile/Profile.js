@@ -21,6 +21,7 @@ function Profile({
   emailError,
   passwordError,
   imageError,
+  image,
 }) {
   const { register, handleSubmit } = useForm();
 
@@ -30,11 +31,13 @@ function Profile({
   const [usernameInput, setUsernameInput] = useState(username);
   const [usernameErrorMessage, setUsernameErrorMessage] = useState('');
 
-  const [imageInput, setImageInput] = useState('');
+  const [imageInput, setImageInput] = useState(image);
   const [imageInputErrorMessage, setImageInputErrorMessage] = useState('');
 
   const [passwordInput, setPasswordInput] = useState('');
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+
+  const [isProfileEdit, setIsProfileEdit] = useState(true);
 
   if (!isLoggin) {
     history.push('/sing-in');
@@ -57,7 +60,7 @@ function Profile({
       setUsernameErrorMessage('');
     }
 
-    const validImage = imageInput.length > 5;
+    const validImage = imageInput.length > 5 || imageInput.length === 0;
     if (validImage === false) {
       setImageInputErrorMessage('it is too short URL');
       return;
@@ -66,7 +69,7 @@ function Profile({
       setImageInputErrorMessage('');
     }
 
-    const isPasswordValid = passwordInput.length > 7 && passwordInput.length < 41;
+    const isPasswordValid = (passwordInput.length > 7 && passwordInput.length < 41) || passwordInput.length === 0;
     if (isPasswordValid === false) {
       setPasswordErrorMessage('password must be from 8 to 40 letters');
       return;
@@ -78,6 +81,12 @@ function Profile({
     for (const key in data) {
       if (data[key].length === 0) delete data[key];
     }
+
+    if (emailInput === email && usernameInput === username && passwordInput.length === 0 && imageInput === image) {
+      setIsProfileEdit(false);
+      return;
+    }
+
     setNewUserData(data);
   };
 
@@ -136,6 +145,7 @@ function Profile({
       <Button submit style={['wide', 'blue', 'margin-bottom']} disabled={isFetching} loading={isFetching}>
         Save
       </Button>
+      {!isProfileEdit && <div className={classes['input-title']}>Nothing to change</div>}
     </form>
   );
 }
@@ -151,6 +161,7 @@ Profile.propTypes = {
   emailError: PropTypes.string,
   passwordError: PropTypes.string,
   imageError: PropTypes.string,
+  image: PropTypes.string.isRequired,
 };
 
 Profile.defaultProps = {
@@ -183,6 +194,7 @@ const mapStateToProps = (state) => {
     props.username = userInState.username;
     props.email = userInState.email;
     props.isLoggin = isLoggin;
+    props.image = userInState.image;
   }
 
   return props;

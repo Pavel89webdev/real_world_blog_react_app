@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import actionsCreators from '../../services/actionsCreators';
 
 import ArticleItem from '../ArticleItem';
 import Pagination from '../Pagination';
@@ -11,18 +10,7 @@ import classes from './ArticleList.module.sass';
 
 import pageSize from '../Pagination/pageSize';
 
-function ArticleList({ articles, isFetching, getArticles, page }) {
-  const getArticlesCallback = useCallback(() => {
-    const offset = (page - 1) * pageSize;
-    return getArticles(offset);
-  }, [page, getArticles]);
-
-  useEffect(() => {
-    if (!isFetching && articles.length === 0) {
-      getArticlesCallback();
-    }
-  }, [articles.length, isFetching, getArticlesCallback, page]);
-
+function ArticleList({ articles, isFetching, articlesCount, page }) {
   if (isFetching) {
     return <LoadingBar />;
   }
@@ -31,7 +19,7 @@ function ArticleList({ articles, isFetching, getArticles, page }) {
     return <div>No data :((</div>;
   }
 
-  const renderArticle = ({ title, favoritesCount, tagList, author, updatedAt, description, slug, body }) => (
+  const renderArticle = ({ title, favoritesCount, tagList, author, updatedAt, description, slug, body, favorited }) => (
     <li className={classes.li} key={slug}>
       <ArticleItem
         title={title}
@@ -44,6 +32,7 @@ function ArticleList({ articles, isFetching, getArticles, page }) {
         body={body}
         key={slug}
         id={slug}
+        favorited={favorited}
       />
     </li>
   );
@@ -53,29 +42,28 @@ function ArticleList({ articles, isFetching, getArticles, page }) {
   return (
     <>
       <ul className={classes.ul}>{renderArticleList()}</ul>
-      <Pagination />
+      {articlesCount > pageSize && <Pagination page={page} />}
     </>
+    // передавать в пагинацию часть роута чтобы все не шло на список статей */
   );
 }
 
 const mapStateToProps = (state) => ({
   articles: state.articles.articles,
   isFetching: state.isFetching,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  getArticles: (offset) => actionsCreators.getArticles(dispatch, offset),
+  articlesCount: state.articles.totalCount,
 });
 
 ArticleList.propTypes = {
   articles: PropTypes.array.isRequired,
   isFetching: PropTypes.bool.isRequired,
-  getArticles: PropTypes.func.isRequired,
+  articlesCount: PropTypes.number,
   page: PropTypes.number,
 };
 
 ArticleList.defaultProps = {
+  articlesCount: 1,
   page: 1,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ArticleList);
+export default connect(mapStateToProps)(ArticleList);

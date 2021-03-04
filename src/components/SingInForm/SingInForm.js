@@ -9,7 +9,6 @@ import actionsCreators from '../../services/actionsCreators';
 import classes from './SingInForm.module.sass';
 import Button from '../Button';
 import FormErrorMessage from '../FormErrorMessage';
-import LoadingBar from '../LoadingBar';
 
 import { Input } from '../formInputs';
 
@@ -24,7 +23,7 @@ function SingInForm({ singIn, isLoggin, history, isFetching, emailOrPasswordInva
 
   if (isLoggin) {
     history.push('/articles/page/1');
-    return <LoadingBar />;
+    return null; // ?? это не проблема??
   }
 
   const onSubmit = (data) => {

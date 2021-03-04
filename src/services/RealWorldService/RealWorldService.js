@@ -1,9 +1,14 @@
-import setUserToLocalStorage from '../setUserToLocalStorage';
+import setTokenToLocaleStorage from '../setTokenToLocaleStorage';
+import getTokenFromLocaleStorage from '../getTokenFromLocaleStorage';
+import getUsernameFromLocaleSorage from '../getUsernameFromLocaleSorage';
+import setUsernameToLocaleStorage from '../setUsernameToLocaleStorage';
 
 class RealWorldService {
   apiBase = 'https://conduit.productionready.io/api';
 
   token = '';
+
+  username = '';
 
   async getResourse(url, options = null) {
     let result = null;
@@ -11,6 +16,13 @@ class RealWorldService {
       const response = await fetch(url, options);
       if (response.status === 404) {
         throw new Error('Error code 404: There is no article on this URL :(');
+      }
+      if (response.status === 401) {
+        setTokenToLocaleStorage('');
+        this.token = '';
+        setUsernameToLocaleStorage('');
+        this.username = '';
+        throw new Error('Error code 401: Problems with authorization');
       }
       result = await response.json();
       return result;
@@ -21,11 +33,29 @@ class RealWorldService {
     }
   }
 
-  async getArticles(offset = 0) {
-    const url = `${this.apiBase}/articles?offset=${offset}`;
-    const articles = await this.getResourse(url);
-    return articles;
-    // ?offset=0 - пропуск постов - нужно для пагинации
+  async getArticles(offset = 0, author = false) {
+    let url = `${this.apiBase}/articles?offset=${offset}`;
+    if (author) {
+      url += `&author=${author}`;
+    }
+    let options = null;
+    console.log(url);
+    if (this.token) {
+      options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Token ${this.token}`,
+        },
+      };
+    }
+    try {
+      const articles = await this.getResourse(url, options);
+      return articles;
+    } catch (e) {
+      const articles = await this.getResourse(url);
+      return articles;
+    }
   }
 
   async getOneArticle(id) {
@@ -45,15 +75,52 @@ class RealWorldService {
       body: JSON.stringify({ user: { ...userObj } }),
     };
     const newUser = await this.getResourse(url, options);
+
+    if (newUser.errors === undefined) {
+      const { token, username } = newUser.user;
+      setTokenToLocaleStorage(token);
+      this.token = token;
+      setUsernameToLocaleStorage(username);
+      this.username = username;
+    }
+
     return newUser;
   }
 
+  async getUser() {
+    const url = `${this.apiBase}/user`;
+    const options = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Token ${this.token}`,
+      },
+    };
+    const user = await this.getResourse(url, options);
+    return user;
+  }
+
   async singIn(userObj = { email: '', password: '' }) {
+    const tokenFromLocaleStorage = getTokenFromLocaleStorage();
+
+    if (tokenFromLocaleStorage) {
+      this.token = tokenFromLocaleStorage;
+      const user = await this.getUser();
+      const { username } = user.user;
+      this.username = username;
+      setUsernameToLocaleStorage(username);
+      return user;
+    }
+
     const url = `${this.apiBase}/users/login`;
     const user = await this.registerNewUser(userObj, url);
+
     if (user.errors === undefined) {
-      setUserToLocalStorage(user.user, userObj.password);
-      this.token = user.user.token;
+      const { token, username } = user.user;
+      setTokenToLocaleStorage(token);
+      this.token = token;
+      setUsernameToLocaleStorage(username);
+      this.username = username;
     }
     return user;
   }
@@ -65,7 +132,7 @@ class RealWorldService {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: ` Token ${this.token}`,
+        Authorization: `Token ${this.token}`,
       },
       body,
     };
@@ -80,7 +147,7 @@ class RealWorldService {
       method: method || 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: ` Token ${this.token}`,
+        Authorization: `Token ${this.token}`,
       },
       body,
     };
@@ -101,7 +168,7 @@ class RealWorldService {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: ` Token ${this.token}`,
+        Authorization: `Token ${this.token}`,
       },
     };
 
@@ -109,17 +176,33 @@ class RealWorldService {
     return response;
   }
 
-  async likeArticle(id) {
+  async likeArticle(id, unLike = false) {
     const url = `${this.apiBase}/articles/${id}/favorite`;
     const options = {
-      method: 'POST',
+      method: unLike ? 'DELETE' : 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: ` Token ${this.token}`,
+        Authorization: `Token ${this.token}`,
       },
     };
     const article = await this.getResourse(url, options);
     return article;
+  }
+
+  unLikeArticle(id) {
+    return this.likeArticle(id, true);
+  }
+
+  async getMyArticles(offset) {
+    let username = 'none';
+    const usernameFromLocaleStorage = getUsernameFromLocaleSorage();
+    if (usernameFromLocaleStorage !== '') username = usernameFromLocaleStorage;
+    if (this.username !== '') username = this.username;
+    let result = { articles: [] };
+    if (username) {
+      result = await this.getArticles(offset, username);
+    }
+    return result;
   }
 }
 

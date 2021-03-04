@@ -16,13 +16,13 @@ import NewArticle from './components/NewArticle';
 import EditArticle from './components/EditArticle';
 
 import actionsCreators from './services/actionsCreators';
-import getUserFromLocalStorage from './services/getUserFromLocalStorage';
+import getTokenFromLocaleStorage from './services/getTokenFromLocaleStorage';
 import PrivateRoute from './components/PrivateRoute';
+import pageSize from './components/Pagination/pageSize';
 
-const singInUser = getUserFromLocalStorage();
-
-if (singInUser !== false) {
-  store.dispatch(() => actionsCreators.singIn(store.dispatch, singInUser));
+const token = getTokenFromLocaleStorage();
+if (token) {
+  store.dispatch(() => actionsCreators.singInWithToken(store.dispatch));
 }
 
 function App() {
@@ -33,33 +33,44 @@ function App() {
         <Main>
           <Switch>
             <Redirect exact from="/" to="/articles/page/1" />
-            <Route path="/sing-in" component={SingIn} />
+            <Route exact path="/sing-in" component={SingIn} />
             <Route
               exact
               path="/articles/page/:id"
               render={({ match }) => {
                 const page = +match.params.id;
-                store.dispatch(actionsCreators.changePage(page));
+                const offset = (page - 1) * pageSize;
+                store.dispatch(() => actionsCreators.getArticles(store.dispatch, offset));
                 return <ArticleList page={page} />;
               }}
             />
             <Route
               path="/article/:id"
+              exact
               render={({ match }) => {
                 const { id } = match.params;
                 return <ArticleItemWithService id={id} />;
               }}
             />
-            <Route path="/sing-up" component={RegistrationForm} />
+            <Route exact path="/sing-up" component={RegistrationForm} />
 
             <PrivateRoute path="/new-article" component={NewArticle} />
             <PrivateRoute Component={Profile} path="/profile" />
             <PrivateRoute
               exact
-              path="/articles/:id/edit"
+              path="/article/:id/edit"
               render={({ match }) => {
                 const { id } = match.params;
                 return <EditArticle id={id} />;
+              }}
+            />
+            <PrivateRoute
+              path="/my-articles"
+              exact
+              render={() => {
+                const offset = 0;
+                store.dispatch(() => actionsCreators.getMyArticles(store.dispatch, offset));
+                return <ArticleList page={1} />;
               }}
             />
 
