@@ -4,6 +4,30 @@ import classNames from 'classnames';
 
 import classes from './Button.module.sass';
 
+function createRipple(event) {
+  const button = event.target;
+
+  const circle = document.createElement('span');
+  const diameter = Math.max(button.clientWidth, button.clientHeight);
+  const radius = diameter / 2;
+
+  const styleDiametr = `${diameter}px`;
+
+  circle.style.width = styleDiametr;
+  circle.style.height = styleDiametr;
+  circle.style.left = `${event.clientX - (button.offsetLeft + radius)}px`;
+  circle.style.top = `${event.clientY - (button.offsetTop + radius)}px`;
+  circle.classList.add(classes.ripple);
+
+  const ripple = button.getElementsByClassName(classes.ripple)[0];
+
+  if (ripple) {
+    ripple.remove();
+  }
+
+  button.appendChild(circle);
+}
+
 function Button({ children, style, submit, disabled, loading, onClick }) {
   let styles = null;
 
@@ -14,7 +38,15 @@ function Button({ children, style, submit, disabled, loading, onClick }) {
   const resultClass = classNames(classes.base, styles);
 
   return (
-    <button className={resultClass} type={submit ? 'submit' : 'button'} disabled={disabled} onClick={onClick}>
+    <button
+      className={resultClass}
+      type={submit ? 'submit' : 'button'}
+      disabled={disabled}
+      onClick={(e) => {
+        createRipple(e);
+        onClick();
+      }}
+    >
       {loading ? 'loading' : children}
     </button>
   );

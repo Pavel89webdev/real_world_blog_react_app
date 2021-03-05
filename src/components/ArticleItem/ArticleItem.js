@@ -11,6 +11,7 @@ import { Popconfirm /* message */ } from 'antd';
 import realWorldService from '../../services/RealWorldService';
 
 import Button from '../Button';
+import TagsBar from '../TagsBar';
 
 import actionsCreators from '../../services/actionsCreators';
 
@@ -66,7 +67,6 @@ function ArticleItem({
   const bodyClasses = isActive ? classNames(classes.body, classes.active) : classes.body;
   const link = `/article/${id}`;
 
-  const renderTags = () => tags.map((tag) => <p key={tag}>{tag}</p>);
   const renderPublishDate = () => {
     const date = new Date(publishDate);
     return format(date, 'd, MMM yyyy');
@@ -81,23 +81,19 @@ function ArticleItem({
               <div className={classes.title}>{title} </div>
             </Link>
 
-            {isLoggin && (
-              <div
-                className={classNames(classes.likes, isLiked ? classes.liked : null)}
-                tabIndex="0"
-                role="button"
-                onKeyPress={(e) => {
-                  if (e.code === 'Enter') onLike();
-                }}
-                onClick={onLike}
-              >
-                {likesCountState}
-              </div>
-            )}
-
-            {!isLoggin && <div className={classNames(classes.likes, classes['likes-disabled'])}>{likesCountState}</div>}
+            <button
+              disabled={isLoggin === false}
+              type="button"
+              className={classNames(classes.likes, isLiked ? classes.liked : null)}
+              onKeyPress={(e) => {
+                if (e.code === 'Enter') onLike();
+              }}
+              onClick={onLike}
+            >
+              {likesCountState}
+            </button>
           </div>
-          <div className={classes.tags}>{renderTags()}</div>
+          <TagsBar tagsArr={tags} disabled />
         </div>
         <div className={classes.wrapper}>
           <div className={classes.published}>

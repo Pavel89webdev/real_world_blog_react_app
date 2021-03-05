@@ -93,47 +93,44 @@ TextArea.defaultProps = {
   maxLength: null,
 };
 
-const TagInput = React.forwardRef(({ value, name, widthAddButton, onDelete, onAdd, onInput }, ref) => (
+const TagInput = ({ value, onAdd, onInput, errorMessage }) => (
   <div className={classes['tag-wrapper']}>
-    <input
-      name={name}
-      type="text"
-      className={classNames(classes.input, classes['input-tag'])}
-      placeholder="Tag"
-      ref={ref}
-      onInput={(e) => {
-        onInput(e.target.value);
-      }}
-      value={value}
-    />
-    <Button
-      style={['margin-right-small', 'red', 'outlined', 'wide-padding']}
-      onClick={() => {
-        onDelete(name);
-      }}
-    >
-      Delete
+    <div className={classes['tag-input-wrapper']}>
+      <input
+        autoComplete="off"
+        name="tag"
+        type="text"
+        className={classNames(classes.input, classes['input-tag'])}
+        placeholder="Tag"
+        onInput={(e) => {
+          onInput(e.target.value);
+        }}
+        value={value}
+        onKeyDown={(e) => {
+          if (e.code === 'Enter') {
+            e.preventDefault();
+            onAdd();
+          }
+        }}
+      />
+      {errorMessage && <FormErrorMessage serverError={errorMessage} />}
+    </div>
+    <Button style={['blue', 'outlined', 'text-blue', 'wide-padding']} onClick={onAdd}>
+      Add tag
     </Button>
-    {widthAddButton && (
-      <Button style={['blue', 'outlined', 'text-blue', 'wide-padding']} onClick={onAdd}>
-        Add tag
-      </Button>
-    )}
   </div>
-));
+);
 
 TagInput.propTypes = {
-  widthAddButton: PropTypes.bool,
-  name: PropTypes.string.isRequired,
-  onDelete: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
   value: PropTypes.string,
   onInput: PropTypes.func.isRequired,
+  errorMessage: PropTypes.string,
 };
 
 TagInput.defaultProps = {
-  widthAddButton: false,
   value: '',
+  errorMessage: '',
 };
 
 const Checkbox = React.forwardRef(({ description, required }, ref) => (

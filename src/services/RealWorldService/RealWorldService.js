@@ -39,7 +39,6 @@ class RealWorldService {
       url += `&author=${author}`;
     }
     let options = null;
-    console.log(url);
     if (this.token) {
       options = {
         method: 'GET',

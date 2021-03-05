@@ -7,10 +7,11 @@ import actionsCreators from '../../services/actionsCreators';
 
 import { TextArea, TagInput, Input } from '../formInputs';
 import Button from '../Button';
+import TagsBar from '../TagsBar';
 
 import classes from './NewArticle.module.sass';
 
-let tagsCount = 1;
+// let tagsCount = 1;
 
 function NewArticle({
   id,
@@ -18,18 +19,14 @@ function NewArticle({
   articleDescription,
   articleBody,
   title,
-  articleTagList,
   createArticle,
   updateArticle,
   loading,
   justCreatedArticle,
   clearJustCreateArticle,
   history,
+  articleTagList,
 }) {
-  if (justCreatedArticle) {
-    history.push(`/article/${justCreatedArticle}`);
-    clearJustCreateArticle();
-  }
   const { register, handleSubmit } = useForm();
 
   const [inputTitle, setInputTitle] = useState(articleTitle);
@@ -40,6 +37,31 @@ function NewArticle({
 
   const [inputBody, setInputBody] = useState(articleBody);
   const [errorMessageBody, setErrorMessageBody] = useState('');
+
+  const [inputTag, setInputTag] = useState('');
+  const [tagError, setTagError] = useState('');
+
+  const [tagsArr, setTagsArr] = useState([...articleTagList]);
+
+  if (justCreatedArticle) {
+    clearJustCreateArticle();
+    history.push(`/article/${justCreatedArticle}`);
+    return null;
+  }
+
+  const onAddTag = () => {
+    const isUniqe = tagsArr.includes(inputTag) === false;
+    if (isUniqe === true) setTagError('');
+    if (isUniqe === false) setTagError('this tag is already added');
+    if (inputTag !== '' && isUniqe) {
+      setTagsArr([...tagsArr, inputTag]);
+      setInputTag('');
+    }
+  };
+
+  const onDeleteTag = (tag) => {
+    setTagsArr(tagsArr.filter((item) => item !== tag));
+  };
 
   const onSubmit = (data) => {
     if (inputTitle.length < 4) {
@@ -64,19 +86,11 @@ function NewArticle({
       setErrorMessageBody('');
     }
 
-    const tagList = [];
-
-    for (const key in data) {
-      if (key.includes('tag', 0)) {
-        tagList.push(data[key]);
-      }
-    }
-
     const newArticle = {
       title: data.title,
       description: data.description,
       body: data.body,
-      tagList,
+      tagList: tagsArr,
     };
 
     if (id !== '') {
@@ -85,46 +99,6 @@ function NewArticle({
     }
     createArticle(newArticle);
   };
-
-  let commonTags = [{ name: 'tag_1', value: '' }];
-  if (articleTagList.length > 0) {
-    commonTags = articleTagList.map((item, i) => ({ name: `tag_${++i}`, value: item }));
-  }
-
-  const [tags, setTags] = useState(commonTags);
-
-  const addTag = () => {
-    setTags([...tags, { name: `tag_${++tagsCount}`, value: '' }]);
-  };
-
-  const changeTagValue = (value, name) => {
-    const newTags = tags.map((item) => {
-      if (item.name === name) item.value = value;
-      return item;
-    });
-    setTags(newTags);
-  };
-
-  const deleteTag = (name) => {
-    if (tags.length > 1) return setTags(tags.filter((item) => item.name !== name));
-    return tags;
-  };
-
-  const renderTagsInputs = () =>
-    tags.map((item, index, tagsArr) => (
-      <TagInput
-        key={item.name}
-        name={item.name}
-        widthAddButton={index + 1 === tagsArr.length}
-        onAdd={addTag}
-        onDelete={deleteTag}
-        ref={register}
-        value={item.value}
-        onInput={(value) => {
-          changeTagValue(value, item.name);
-        }}
-      />
-    ));
 
   return (
     <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
@@ -165,9 +139,17 @@ function NewArticle({
         onInput={setInputBody}
       />
       <div className={classes['input-title']}>Tags</div>
-
-      {renderTagsInputs()}
-      <Button submit style={['blue', 'half-wide']} loading={loading}>
+      <TagsBar tagsArr={tagsArr} marginBottom onClick={onDeleteTag} />
+      <TagInput
+        onAdd={onAddTag}
+        onDelete={() => {}}
+        value={inputTag}
+        onInput={(text) => {
+          setInputTag(text);
+        }}
+        errorMessage={tagError}
+      />
+      <Button submit style={['blue', 'half-wide']} loading={loading} disabled={loading}>
         Send
       </Button>
     </form>
@@ -185,8 +167,8 @@ NewArticle.propTypes = {
   articleDescription: PropTypes.string,
   articleBody: PropTypes.string,
   clearJustCreateArticle: PropTypes.func.isRequired,
-  articleTagList: PropTypes.array,
   id: PropTypes.string,
+  articleTagList: PropTypes.array,
 };
 
 NewArticle.defaultProps = {
@@ -195,8 +177,8 @@ NewArticle.defaultProps = {
   articleTitle: '',
   articleDescription: '',
   articleBody: '',
-  articleTagList: [],
   id: '',
+  articleTagList: [],
 };
 
 const mapStateToProps = (state) => ({
@@ -208,7 +190,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   createArticle: (article) => actionsCreators.createArticle(dispatch, article),
   updateArticle: (article, id) => actionsCreators.updateArticle(dispatch, article, id),
-  clearJustCreateArticle: actionsCreators.clearJustCreateArticle,
+  clearJustCreateArticle: () => dispatch(actionsCreators.clearJustCreateArticle()),
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(NewArticle));

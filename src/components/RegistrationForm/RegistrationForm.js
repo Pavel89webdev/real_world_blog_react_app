@@ -159,7 +159,7 @@ RegistrationForm.defaultProps = {
 const mapStateToProps = (state) => {
   const { user } = state;
   const props = {
-    isFetching: state.isFetching,
+    isFetching: state.user.isLogginFetching,
     isLoggin: user.isLoggin,
   };
   if (user.errors) {

@@ -101,7 +101,7 @@ SingInForm.propTypes = {
 const mapStateToProps = (state) => {
   const props = {
     isLoggin: state.user.isLoggin,
-    isFetching: state.isFetching,
+    isFetching: state.user.isLogginFetching,
     emailOrPasswordInvalid: false,
   };
 

@@ -32,6 +32,8 @@
     padding-left: 21px
     position: relative
     outline: none
+    background-color: transparent
+    border: none
     &::before
         content: ""
         position: absolute
@@ -46,8 +48,8 @@
         transition: all 0.3s
     &:active
         &::before
-            transform: translateY(-50%) scale(1.2)
-    &-disabled
+            transform: translateY(-50%) scale(1.05)
+    &:disabled
         &::before
             content: ""
             position: absolute
@@ -59,6 +61,7 @@
             height: 14px
             background: url('/img/like.svg') no-repeat center center/cover
             cursor: auto
+            opacity: .5
         &:active
             &::before
                 transform: translateY(-50%)
