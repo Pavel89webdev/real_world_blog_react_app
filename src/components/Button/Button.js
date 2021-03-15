@@ -28,19 +28,23 @@ function createRipple(event) {
   button.appendChild(circle);
 }
 
-function Button({ children, style, submit, disabled, loading, onClick }) {
-  let styles = null;
-
-  if (Array.isArray(style)) {
-    styles = style.map((i) => classes[i]);
-  }
-
-  const resultClass = classNames(classes.base, styles);
+function Button({
+  children,
+  addClasses,
+  type,
+  disabled,
+  loading,
+  onClick /* type */,
+}) {
+  const resultClass = classNames(
+    classes.base,
+    addClasses.map((i) => classes[i])
+  );
 
   return (
     <button
       className={resultClass}
-      type={submit ? 'submit' : 'button'}
+      type={type === 'button' ? 'button' : 'submit'}
       disabled={disabled}
       onClick={(e) => {
         createRipple(e);
@@ -54,8 +58,8 @@ function Button({ children, style, submit, disabled, loading, onClick }) {
 
 Button.propTypes = {
   children: PropTypes.string,
-  style: PropTypes.array,
-  submit: PropTypes.bool,
+  addClasses: PropTypes.array,
+  type: PropTypes.string,
   disabled: PropTypes.bool,
   loading: PropTypes.bool,
   onClick: PropTypes.func,
@@ -63,8 +67,8 @@ Button.propTypes = {
 
 Button.defaultProps = {
   children: 'Click Me',
-  style: [],
-  submit: false,
+  addClasses: [],
+  type: 'submit',
   disabled: false,
   loading: false,
   onClick: () => {},

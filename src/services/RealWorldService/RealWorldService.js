@@ -1,17 +1,27 @@
-import setTokenToLocaleStorage from '../setTokenToLocaleStorage';
-import getTokenFromLocaleStorage from '../getTokenFromLocaleStorage';
-import getUsernameFromLocaleSorage from '../getUsernameFromLocaleSorage';
-import setUsernameToLocaleStorage from '../setUsernameToLocaleStorage';
+import {
+  setTokenToLocaleStorage,
+  setUsernameToLocaleStorage,
+  getUsernameFromLocaleSorage,
+  getTokenFromLocaleStorage,
+} from '../../helpers/localStorageForUser/localStorageForUser';
 
 class RealWorldService {
   apiBase = 'https://conduit.productionready.io/api';
 
-  token = '';
-
-  username = '';
-
   async getResourse(url, options = null) {
     let result = null;
+
+    const token = getTokenFromLocaleStorage();
+    if (!options && token) {
+      options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Token ${token}`,
+        },
+      };
+    }
+
     try {
       const response = await fetch(url, options);
       if (response.status === 404) {
@@ -19,9 +29,7 @@ class RealWorldService {
       }
       if (response.status === 401) {
         setTokenToLocaleStorage('');
-        this.token = '';
         setUsernameToLocaleStorage('');
-        this.username = '';
         throw new Error('Error code 401: Problems with authorization');
       }
       result = await response.json();
@@ -35,16 +43,17 @@ class RealWorldService {
 
   async getArticles(offset = 0, author = false) {
     let url = `${this.apiBase}/articles?offset=${offset}`;
+    const token = getTokenFromLocaleStorage();
     if (author) {
       url += `&author=${author}`;
     }
     let options = null;
-    if (this.token) {
+    if (token) {
       options = {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Token ${this.token}`,
+          Authorization: `Token ${token}`,
         },
       };
     }
@@ -63,7 +72,10 @@ class RealWorldService {
     return article;
   }
 
-  async registerNewUser(userObj = { username: '', email: '', password: '' }, url = null) {
+  async registerNewUser(
+    userObj = { username: '', email: '', password: '' },
+    url = null
+  ) {
     if (!url) url = `${this.apiBase}/users`;
 
     const options = {
@@ -78,9 +90,7 @@ class RealWorldService {
     if (newUser.errors === undefined) {
       const { token, username } = newUser.user;
       setTokenToLocaleStorage(token);
-      this.token = token;
       setUsernameToLocaleStorage(username);
-      this.username = username;
     }
 
     return newUser;
@@ -88,11 +98,12 @@ class RealWorldService {
 
   async getUser() {
     const url = `${this.apiBase}/user`;
+    const token = getTokenFromLocaleStorage();
     const options = {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Token ${this.token}`,
+        Authorization: `Token ${token}`,
       },
     };
     const user = await this.getResourse(url, options);
@@ -103,10 +114,8 @@ class RealWorldService {
     const tokenFromLocaleStorage = getTokenFromLocaleStorage();
 
     if (tokenFromLocaleStorage) {
-      this.token = tokenFromLocaleStorage;
       const user = await this.getUser();
       const { username } = user.user;
-      this.username = username;
       setUsernameToLocaleStorage(username);
       return user;
     }
@@ -117,9 +126,7 @@ class RealWorldService {
     if (user.errors === undefined) {
       const { token, username } = user.user;
       setTokenToLocaleStorage(token);
-      this.token = token;
       setUsernameToLocaleStorage(username);
-      this.username = username;
     }
     return user;
   }
@@ -127,11 +134,12 @@ class RealWorldService {
   async updateUser(userObj = {}) {
     const url = `${this.apiBase}/user`;
     const body = JSON.stringify({ user: { ...userObj } });
+    const token = getTokenFromLocaleStorage();
     const options = {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Token ${this.token}`,
+        Authorization: `Token ${token}`,
       },
       body,
     };
@@ -142,11 +150,12 @@ class RealWorldService {
   async createArticle(articleObj = {}, url = null, method = null) {
     if (url === null) url = `${this.apiBase}/articles`;
     const body = JSON.stringify({ article: { ...articleObj } });
+    const token = getTokenFromLocaleStorage();
     const options = {
       method: method || 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Token ${this.token}`,
+        Authorization: `Token ${token}`,
       },
       body,
     };
@@ -163,11 +172,12 @@ class RealWorldService {
 
   async deleteArticle(id) {
     const url = `${this.apiBase}/articles/${id}`;
+    const token = getTokenFromLocaleStorage();
     const options = {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Token ${this.token}`,
+        Authorization: `Token ${token}`,
       },
     };
 
@@ -177,11 +187,12 @@ class RealWorldService {
 
   async likeArticle(id, unLike = false) {
     const url = `${this.apiBase}/articles/${id}/favorite`;
+    const token = getTokenFromLocaleStorage();
     const options = {
       method: unLike ? 'DELETE' : 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Token ${this.token}`,
+        Authorization: `Token ${token}`,
       },
     };
     const article = await this.getResourse(url, options);
@@ -193,13 +204,10 @@ class RealWorldService {
   }
 
   async getMyArticles(offset) {
-    let username = 'none';
     const usernameFromLocaleStorage = getUsernameFromLocaleSorage();
-    if (usernameFromLocaleStorage !== '') username = usernameFromLocaleStorage;
-    if (this.username !== '') username = this.username;
     let result = { articles: [] };
-    if (username) {
-      result = await this.getArticles(offset, username);
+    if (usernameFromLocaleStorage) {
+      result = await this.getArticles(offset, usernameFromLocaleStorage);
     }
     return result;
   }

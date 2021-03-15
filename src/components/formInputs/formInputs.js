@@ -8,7 +8,20 @@ import Button from '../Button';
 import classes from './formInputs.module.sass';
 
 const Input = React.forwardRef(
-  ({ value, type, minLength, maxLength, placeholder, required, errorMessage, name, onInput }, ref) => (
+  (
+    {
+      value,
+      type,
+      minLength,
+      maxLength,
+      placeholder,
+      required,
+      errorMessage,
+      name,
+      onInput,
+    },
+    ref
+  ) => (
     <>
       <input
         name={name}
@@ -16,7 +29,10 @@ const Input = React.forwardRef(
         minLength={minLength}
         maxLength={maxLength}
         required={required}
-        className={classNames(classes.input, errorMessage ? classes['input-invalid'] : null)}
+        className={classNames(
+          classes.input,
+          errorMessage ? classes['input-invalid'] : null
+        )}
         placeholder={placeholder}
         ref={ref}
         onInput={(e) => {
@@ -52,7 +68,19 @@ Input.defaultProps = {
 };
 
 const TextArea = React.forwardRef(
-  ({ value, minLength, maxLength, placeholder, required, errorMessage, name, onInput }, ref) => (
+  (
+    {
+      value,
+      minLength,
+      maxLength,
+      placeholder,
+      required,
+      errorMessage,
+      name,
+      onInput,
+    },
+    ref
+  ) => (
     <>
       <textarea
         name={name}
@@ -60,7 +88,10 @@ const TextArea = React.forwardRef(
         minLength={minLength}
         maxLength={maxLength}
         required={required}
-        className={classNames(classes.input, errorMessage ? classes['input-invalid'] : null)}
+        className={classNames(
+          classes.input,
+          errorMessage ? classes['input-invalid'] : null
+        )}
         placeholder={placeholder}
         ref={ref}
         onInput={(e) => {
@@ -115,7 +146,11 @@ const TagInput = ({ value, onAdd, onInput, errorMessage }) => (
       />
       {errorMessage && <FormErrorMessage serverError={errorMessage} />}
     </div>
-    <Button style={['blue', 'outlined', 'text-blue', 'wide-padding']} onClick={onAdd}>
+    <Button
+      addClasses={['blue', 'outlined', 'text-blue', 'wide-padding']}
+      onClick={onAdd}
+      type="button"
+    >
       Add tag
     </Button>
   </div>
@@ -135,7 +170,13 @@ TagInput.defaultProps = {
 
 const Checkbox = React.forwardRef(({ description, required }, ref) => (
   <label className={classes['checkbox-label']}>
-    <input name="personal-data-agreement" className={classes.checkbox} type="checkbox" ref={ref} required={required} />
+    <input
+      name="personal-data-agreement"
+      className={classes.checkbox}
+      type="checkbox"
+      ref={ref}
+      required={required}
+    />
     <div className={classes['custom-checkbox']} />
     <p>{description}</p>
   </label>

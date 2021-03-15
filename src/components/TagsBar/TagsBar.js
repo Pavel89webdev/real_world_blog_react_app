@@ -1,28 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
 
-import classes from './TagsBar.module.sass';
+import Button from '../Button';
 
-function TagsBar({ tagsArr, marginBottom, onClick, disabled }) {
+function TagsBar({ tagsArr, onClick }) {
   const tags = tagsArr.map((item) => {
-    const currentClasses = classNames(classes.tag, marginBottom && classes['margin-bottom']);
-
     const newItem = (
-      <button
-        className={currentClasses}
-        type="button"
-        key={item}
+      <Button
+        addClasses={['tag']}
         onClick={() => {
           onClick(item);
         }}
-        onKeyDown={(e) => {
-          if (e.code === 'Enter') onClick(item);
-        }}
-        disabled={disabled}
+        type="button"
       >
         {item}
-      </button>
+      </Button>
     );
 
     return newItem;
@@ -33,15 +25,11 @@ function TagsBar({ tagsArr, marginBottom, onClick, disabled }) {
 
 TagsBar.propTypes = {
   tagsArr: PropTypes.array,
-  marginBottom: PropTypes.bool,
   onClick: PropTypes.func,
-  disabled: PropTypes.bool,
 };
 
 TagsBar.defaultProps = {
-  disabled: false,
   tagsArr: [],
-  marginBottom: false,
   onClick: () => {},
 };
 
