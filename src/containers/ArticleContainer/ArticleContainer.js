@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import format from 'date-fns/format';
 
-import realWorldService from '../../services/RealWorldService';
+import ArticleService from '../../services/RealWorldService/ArticleService';
 
 import Article from '../../components/Article';
 
@@ -47,13 +47,13 @@ function ArticleContainer({
     if (isLiked) {
       setLikesCountState(likesCountState - 1);
       setLiked(false);
-      realWorldService.unLikeArticle(id);
+      ArticleService.unLikeArticle(id);
       return;
     }
     if (!isLiked) {
       setLikesCountState(likesCountState + 1);
       setLiked(true);
-      realWorldService.likeArticle(id);
+      ArticleService.likeArticle(id);
     }
   }
 

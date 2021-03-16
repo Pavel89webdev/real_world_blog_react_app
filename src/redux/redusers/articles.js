@@ -1,4 +1,4 @@
-import realWorldService from '../../services/RealWorldService';
+import ArticleService from '../../services/RealWorldService/ArticleService';
 
 const GET_ARTICLES = 'GET_ARTICLES';
 const GET_MY_ARTICLES = 'GET_MY_ARTICLES';
@@ -33,7 +33,7 @@ const actionsCreatorsArticle = {
     dispatch(actionsCreatorsArticle.isFetchingOn());
 
     try {
-      const result = await realWorldService.getArticles(offset);
+      const result = await ArticleService.getArticles(offset);
       const action = {
         type: GET_ARTICLES,
         articles: result.articles,
@@ -51,7 +51,7 @@ const actionsCreatorsArticle = {
     dispatch(actionsCreatorsArticle.isFetchingOn());
 
     try {
-      const result = await realWorldService.getMyArticles(offset);
+      const result = await ArticleService.getMyArticles(offset);
       const action = {
         type: GET_ARTICLES,
         articles: [...result.articles],
@@ -67,7 +67,7 @@ const actionsCreatorsArticle = {
     dispatch(actionsCreatorsArticle.isFetchingOn());
 
     try {
-      const result = await realWorldService.getOneArticle(id);
+      const result = await ArticleService.getOneArticle(id);
       const action = {
         type: GET_ONE_ARTICLE,
         articles: [result.article],
@@ -83,7 +83,7 @@ const actionsCreatorsArticle = {
     dispatch(actionsCreatorsArticle.isFetchingOn());
 
     try {
-      const result = await realWorldService.createArticle(article);
+      const result = await ArticleService.createArticle(article);
       const action = {
         type: CREATE_NEW_ARTICLE,
         article: result.article,
@@ -99,7 +99,7 @@ const actionsCreatorsArticle = {
     dispatch(actionsCreatorsArticle.isFetchingOn());
 
     try {
-      const result = await realWorldService.updateArticle(article, id);
+      const result = await ArticleService.updateArticle(article, id);
       const action = {
         type: UPDATE_ARTICLE,
         article: result.article,
@@ -113,7 +113,7 @@ const actionsCreatorsArticle = {
 
   async deleteArticle(dispatch, id) {
     try {
-      await realWorldService.deleteArticle(id);
+      await ArticleService.deleteArticle(id);
       const action = {
         type: DELETE_ARTICLE,
         articleId: id,

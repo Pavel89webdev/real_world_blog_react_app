@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { actionsCreatorsUser } from '../../redux/redusers/user';
 
@@ -9,11 +10,12 @@ import avatar from '../../img/avatar.png';
 
 import classes from './Header.module.sass';
 
-function Header({ isLoggin, userName, imgUrl, logOut }) {
+function Header({ isLoggin, userName, imgUrl, logOut, history }) {
   const img = imgUrl || avatar;
 
   function loggingOut() {
     logOut();
+    history.push('/sing-in');
   }
 
   return (
@@ -84,6 +86,7 @@ Header.propTypes = {
   userName: PropTypes.string,
   imgUrl: PropTypes.string,
   logOut: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
 };
 
 Header.defaultProps = {
@@ -108,4 +111,4 @@ const mapDispatchToProps = (dispatch) => ({
   logOut: () => dispatch(actionsCreatorsUser.logOut()),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Header);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Header));

@@ -129,7 +129,6 @@ const mapStateToProps = (state) => {
   };
 
   if (state.user.errors) {
-    console.log('case');
     const { errors } = state.user;
     if (errors.username) props.usernameError = errors.username;
     if (errors.email) props.emailError = errors.email;

@@ -1,37 +1,37 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import ArticleContainer from '../ArticleContainer';
 import Pagination from '../Pagination';
 import LoadingBar from '../../components/LoadingBar';
 import NoDataMessage from '../../components/NoDataMessage';
 
+import { actionsCreatorsArticle } from '../../redux/redusers/articles';
+
 import classes from './ArticleList.module.sass';
 
 import { PAGE_SIZE } from '../../constants';
 
-import {
-  articles as reduceArtiles,
-  actionsCreatorsArticle,
-  initialState,
-} from '../../redux/redusers/articles';
-
-function ArticleList({ page, myArticles }) {
-  const [{ articles, isFetching, articlesCount }, dispatch] = useReducer(
-    reduceArtiles,
-    initialState
-  );
-
+function ArticleList({
+  page,
+  myArticles,
+  getArticles,
+  getMyArticles,
+  isFetching,
+  articles,
+  articlesCount,
+}) {
   useEffect(() => {
     const offset = (page - 1) * PAGE_SIZE;
 
     if (!myArticles) {
-      actionsCreatorsArticle.getArticles(dispatch, offset);
+      getArticles(offset);
     }
     if (myArticles) {
-      actionsCreatorsArticle.getMyArticles(dispatch, offset);
+      getMyArticles(offset);
     }
-  }, [page, myArticles]);
+  }, [page, myArticles, getArticles, getMyArticles]);
 
   if (isFetching) {
     return <LoadingBar />;
@@ -84,11 +84,31 @@ function ArticleList({ page, myArticles }) {
 ArticleList.propTypes = {
   page: PropTypes.number,
   myArticles: PropTypes.bool,
+  getArticles: PropTypes.func.isRequired,
+  getMyArticles: PropTypes.func.isRequired,
+  isFetching: PropTypes.bool,
+  articles: PropTypes.array,
+  articlesCount: PropTypes.number,
 };
 
 ArticleList.defaultProps = {
   page: 1,
   myArticles: false,
+  isFetching: true, // стоит ли так делать? иначе первым деалом вылезает <NoDataMessage/> ?
+  articles: [],
+  articlesCount: 1,
 };
 
-export default ArticleList;
+const mapStateToProps = (state) => ({
+  articles: state.articles.articles,
+  isFetching: state.articles.isFetching,
+  articlesCount: state.articles.totalCount,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  getArticles: (offset) => actionsCreatorsArticle.getArticles(dispatch, offset),
+  getMyArticles: (offset) =>
+    actionsCreatorsArticle.getMyArticles(dispatch, offset),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ArticleList);

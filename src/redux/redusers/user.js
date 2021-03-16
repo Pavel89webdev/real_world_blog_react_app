@@ -1,4 +1,4 @@
-import realWorldService from '../../services/RealWorldService';
+import UserService from '../../services/RealWorldService/UserService';
 import {
   setUsernameToLocaleStorage,
   setTokenToLocaleStorage,
@@ -34,7 +34,7 @@ const actionsCreatorsUser = {
     dispatch(actionsCreatorsUser.isLogginFetchingOn());
 
     try {
-      const result = await realWorldService.registerNewUser(userObj);
+      const result = await UserService.registerNewUser(userObj);
       const action = {
         type: SING_UP,
         user: { ...result },
@@ -49,7 +49,7 @@ const actionsCreatorsUser = {
     dispatch(actionsCreatorsUser.isLogginFetchingOn());
 
     try {
-      const result = await realWorldService.singIn(userObj);
+      const result = await UserService.singIn(userObj);
       const action = {
         type: SING_IN,
         user: { ...result },
@@ -64,7 +64,7 @@ const actionsCreatorsUser = {
     dispatch(actionsCreatorsUser.isLogginFetchingOn());
 
     try {
-      const result = await realWorldService.singIn();
+      const result = await UserService.getUser();
       const action = {
         type: SING_IN_WITH_TOKEN,
         user: { ...result },
@@ -79,7 +79,7 @@ const actionsCreatorsUser = {
     dispatch(actionsCreatorsUser.isLogginFetchingOn());
 
     try {
-      const result = await realWorldService.updateUser(userObj);
+      const result = await UserService.updateUser(userObj);
       const action = {
         type: UPDATE_USER,
       };
