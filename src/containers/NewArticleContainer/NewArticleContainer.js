@@ -141,7 +141,7 @@ NewArticleContainer.defaultProps = {
 };
 
 const mapStateToProps = (state) => ({
-  loading: state.isFetching,
+  loading: state.articles.isFetching,
   isLoggin: state.user.isLoggin,
   justCreatedArticle: state.articles.newArticle || '',
 });

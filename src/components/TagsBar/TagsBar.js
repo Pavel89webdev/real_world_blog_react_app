@@ -7,6 +7,7 @@ function TagsBar({ tagsArr, onClick }) {
   const tags = tagsArr.map((item) => {
     const newItem = (
       <Button
+        key={item}
         addClasses={['tag']}
         onClick={() => {
           onClick(item);

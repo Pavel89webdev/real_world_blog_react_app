@@ -1,7 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { actionsCreatorsArticle } from '../../redux/redusers/articles';
 
 import ArticleContainer from '../ArticleContainer';
 import Pagination from '../Pagination';
@@ -12,25 +10,28 @@ import classes from './ArticleList.module.sass';
 
 import { PAGE_SIZE } from '../../constants';
 
-function ArticleList({
-  articles,
-  isFetching,
-  articlesCount,
-  page,
-  getArticles,
-  getMyArticles,
-  myArticles,
-}) {
+import {
+  articles as reduceArtiles,
+  actionsCreatorsArticle,
+  initialState,
+} from '../../redux/redusers/articles';
+
+function ArticleList({ page, myArticles }) {
+  const [{ articles, isFetching, articlesCount }, dispatch] = useReducer(
+    reduceArtiles,
+    initialState
+  );
+
   useEffect(() => {
     const offset = (page - 1) * PAGE_SIZE;
 
     if (!myArticles) {
-      getArticles(offset);
+      actionsCreatorsArticle.getArticles(dispatch, offset);
     }
     if (myArticles) {
-      getMyArticles(offset);
+      actionsCreatorsArticle.getMyArticles(dispatch, offset);
     }
-  }, [page, getArticles, getMyArticles, myArticles]);
+  }, [page, myArticles]);
 
   if (isFetching) {
     return <LoadingBar />;
@@ -80,32 +81,14 @@ function ArticleList({
   );
 }
 
-const mapStateToProps = (state) => ({
-  articles: state.articles.articles,
-  isFetching: state.articles.isFetching,
-  articlesCount: state.articles.totalCount,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  getArticles: (offset) => actionsCreatorsArticle.getArticles(dispatch, offset),
-  getMyArticles: (offset) =>
-    actionsCreatorsArticle.getMyArticles(dispatch, offset),
-});
-
 ArticleList.propTypes = {
-  articles: PropTypes.array.isRequired,
-  isFetching: PropTypes.bool.isRequired,
-  articlesCount: PropTypes.number,
   page: PropTypes.number,
-  getArticles: PropTypes.func.isRequired,
-  getMyArticles: PropTypes.func.isRequired,
   myArticles: PropTypes.bool,
 };
 
 ArticleList.defaultProps = {
-  articlesCount: 1,
   page: 1,
   myArticles: false,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ArticleList);
+export default ArticleList;

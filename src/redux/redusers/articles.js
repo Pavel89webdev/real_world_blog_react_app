@@ -197,4 +197,4 @@ function articles(state = initialState, action) {
   }
 }
 
-export { articles, actionsCreatorsArticle };
+export { articles, actionsCreatorsArticle, initialState };

@@ -54,9 +54,7 @@ function ArticleWithService({
   if (isFetching) {
     return <LoadingBar />;
   }
-  console.log(errorMessage);
   if (errorMessage) {
-    console.log(errorMessage);
     return <ErrorMessage description={errorMessage} />;
   }
 

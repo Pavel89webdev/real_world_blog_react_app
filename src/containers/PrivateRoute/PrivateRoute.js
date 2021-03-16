@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Redirect, Route } from 'react-router-dom';
 
 import { getTokenFromLocaleStorage } from '../../helpers/localStorageForUser/localStorageForUser';
 
-function PrivateRoute({ isLoggin, component: Component, ...rest }) {
+function PrivateRoute({ component: Component, ...rest }) {
   const token = getTokenFromLocaleStorage();
-  if (isLoggin === false && token === '') {
+  if (!token) {
     return <Redirect to="/sing-in" />;
   }
 
@@ -18,18 +17,11 @@ function PrivateRoute({ isLoggin, component: Component, ...rest }) {
 }
 
 PrivateRoute.propTypes = {
-  component: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
-  render: PropTypes.func,
-  isLoggin: PropTypes.bool.isRequired,
+  component: PropTypes.oneOfType([PropTypes.bool, PropTypes.elementType]),
 };
 
 PrivateRoute.defaultProps = {
   component: false,
-  render: () => {},
 };
 
-const mapStateToProps = (state) => ({
-  isLoggin: state.user.isLoggin,
-});
-
-export default connect(mapStateToProps)(PrivateRoute);
+export default PrivateRoute;
